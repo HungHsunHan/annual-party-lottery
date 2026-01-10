@@ -131,6 +131,24 @@ npm run electron:build
 - 側邊欄「建立快照」：儲存當前狀態
 - 側邊欄「同步到前台」：手動更新投影畫面
 
+## 常見客製化調整（開發者）
+
+以下列出較常被調整的項目與對應檔案位置，方便依需求修改：
+
+| 調整項目 | 檔案位置 | 說明 |
+|---|---|---|
+| 倒數秒數 | `src/constants/lottery.ts` | 調整 `REVEAL_COUNTDOWN_SECONDS`（`REVEAL_COUNTDOWN_MS` 會自動連動） |
+| 倒數畫面文案/結構 | `src/components/display/RevealCountdown.tsx` | 倒數階段的標題、文案與呈現內容 |
+| 前台視覺樣式 | `src/components/display/DisplayScreen.css` | 倒數、抽獎、揭曉等前台畫面樣式 |
+| 待機畫面標題/副標 | `src/components/display/StandbyScreen.tsx` | 待機畫面標題與提示文字 |
+| 中獎揭曉文案/紙花 | `src/components/display/WinnerReveal.tsx` | 祝賀文案、紙花顏色與數量 |
+| 抽獎流程與節奏 | `src/components/control/DrawControl.tsx` | 抽獎/確認/重抽的流程節奏與行為 |
+| 預設抽獎模式 | `src/stores/lottery-store.ts` | `drawMode`、`customDrawCount`、`globalExcludeWinners` 等預設值 |
+| Excel 欄位規則 | `src/utils/excel-handler.ts` | 匯入欄位命名與匯出內容的定義 |
+| 備份/快照檔名 | `src/utils/backup-manager.ts` | 備份/快照檔案命名與存檔方式 |
+| 全域色系與字體 | `src/index.css` | CSS 變數、字體與共用樣式 |
+| 預設音效 | `src/utils/sound-manager.ts` | 內建音效與播放行為設定 |
+
 ## 技術架構
 
 - **Electron**：桌面應用框架
