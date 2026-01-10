@@ -1,0 +1,378 @@
+.control-panel {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 側邊欄 */
+.sidebar {
+    width: 240px;
+    background: var(--dark-light);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-header h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.version {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--dark-lighter);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.nav-item:hover {
+    background: var(--dark-lighter);
+    color: var(--text);
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+}
+
+.nav-icon {
+    font-size: 1.25rem;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+/* 主內容區 */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.draw-control-bar {
+    background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.tab-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+/* Dashboard 樣式 */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--dark-light), var(--dark-lighter));
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-icon.people {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.stat-icon.prizes {
+    background: linear-gradient(135deg, #ec4899, #f472b6);
+}
+
+.stat-icon.completed {
+    background: linear-gradient(135deg, #22c55e, #4ade80);
+}
+
+.stat-info h3 {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.stat-value span {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* 獎項列表樣式 */
+.prize-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.prize-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--dark-lighter);
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.prize-item:hover {
+    border-color: var(--border);
+}
+
+.prize-item.dragging {
+    opacity: 0.5;
+    border-color: var(--primary);
+}
+
+.prize-item.current {
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.prize-drag-handle {
+    cursor: grab;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+}
+
+.prize-drag-handle:active {
+    cursor: grabbing;
+}
+
+.prize-info {
+    flex: 1;
+}
+
+.prize-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.prize-progress {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.prize-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--dark-light);
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+}
+
+.quantity-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: var(--dark-lighter);
+    color: var(--text);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.quantity-btn:hover {
+    background: var(--primary);
+}
+
+.quantity-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.quantity-display {
+    min-width: 40px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* 人員列表 */
+.participant-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* 設定面板 */
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.asset-upload {
+    background: var(--dark-lighter);
+    border: 2px dashed var(--border);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.asset-upload:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.asset-preview {
+    max-width: 100%;
+    max-height: 120px;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* 抽獎控制浮動面板 */
+.draw-control-floating {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+    z-index: 100;
+    min-width: 320px;
+}
+
+.draw-control-title {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+}
+
+.draw-control-prize {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.draw-mode-select {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.draw-mode-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.draw-mode-btn.active {
+    background: white;
+    color: var(--primary-dark);
+    border-color: white;
+}
+
+.start-draw-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.25rem;
+    background: white;
+    color: var(--primary-dark);
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: transform 0.2s;
+}
+
+.start-draw-btn:hover {
+    transform: scale(1.02);
+}
+
+.start-draw-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}

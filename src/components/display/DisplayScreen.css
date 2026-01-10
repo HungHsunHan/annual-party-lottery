@@ -1,0 +1,403 @@
+.display-screen {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.background-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+    pointer-events: none;
+}
+
+.background-particles {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(2px 2px at 50px 160px, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 90px 40px, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.3), transparent);
+    background-size: 200px 200px;
+    animation: twinkle 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.display-content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.display-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 2rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    z-index: 20;
+}
+
+.footer-info {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+/* 待機畫面 */
+.standby-screen {
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+.standby-logo {
+    max-width: 400px;
+    max-height: 200px;
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.5));
+}
+
+.standby-title {
+    font-size: 4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #c7d2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 60px rgba(99, 102, 241, 0.5);
+}
+
+.standby-subtitle {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 3rem;
+}
+
+.prize-preview {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.prize-preview-item {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: float 3s ease-in-out infinite;
+}
+
+.prize-preview-item:nth-child(2n) {
+    animation-delay: 0.5s;
+}
+
+.prize-preview-item:nth-child(3n) {
+    animation-delay: 1s;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* 抽獎動畫 */
+.draw-animation {
+    text-align: center;
+}
+
+.draw-prize-name {
+    font-size: 2.5rem;
+    color: #fbbf24;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+}
+
+.draw-slot-machine {
+    background: linear-gradient(180deg, #1e1e3f, #2d2d5f, #1e1e3f);
+    border-radius: 2rem;
+    padding: 3rem 6rem;
+    border: 4px solid #6366f1;
+    box-shadow:
+        0 0 60px rgba(99, 102, 241, 0.3),
+        inset 0 0 60px rgba(99, 102, 241, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.draw-slot-machine::before,
+.draw-slot-machine::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 60px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.draw-slot-machine::before {
+    top: 0;
+    background: linear-gradient(to bottom, #1e1e3f, transparent);
+}
+
+.draw-slot-machine::after {
+    bottom: 0;
+    background: linear-gradient(to top, #1e1e3f, transparent);
+}
+
+.slot-names {
+    font-size: 5rem;
+    font-weight: 800;
+    color: white;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.slot-name {
+    animation: slotSpin 0.1s steps(1) infinite;
+}
+
+@keyframes slotSpin {
+    0% {
+        transform: translateY(-20%);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(20%);
+        opacity: 0.5;
+    }
+}
+
+.slot-name.stopping {
+    animation: slotStop 0.5s ease-out forwards;
+}
+
+@keyframes slotStop {
+    0% {
+        transform: scale(1.2);
+    }
+
+    50% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 確認對話框 */
+.confirm-dialog {
+    text-align: center;
+    animation: slideUp 0.5s ease;
+}
+
+.confirm-prize {
+    font-size: 2rem;
+    color: #fbbf24;
+    margin-bottom: 1rem;
+}
+
+.confirm-winner-container {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.3));
+    backdrop-filter: blur(20px);
+    border-radius: 2rem;
+    padding: 3rem 5rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    margin: 2rem 0;
+}
+
+.confirm-winner-name {
+    font-size: 5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+}
+
+.confirm-winner-dept {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.confirm-hint {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 2rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* 中獎揭曉 */
+.winner-reveal {
+    text-align: center;
+    position: relative;
+}
+
+.winner-confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    top: -20px;
+    animation: confettiFall 3s linear infinite;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+.winner-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1e1e2e;
+    font-size: 1.5rem;
+    font-weight: 800;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    margin-bottom: 2rem;
+    animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.winner-prize-name {
+    font-size: 2.5rem;
+    color: #fbbf24;
+    margin-bottom: 1rem;
+}
+
+.winner-card {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(99, 102, 241, 0.3));
+    backdrop-filter: blur(20px);
+    border-radius: 2rem;
+    padding: 4rem 6rem;
+    border: 3px solid rgba(34, 197, 94, 0.5);
+    box-shadow:
+        0 0 100px rgba(34, 197, 94, 0.3),
+        0 0 200px rgba(99, 102, 241, 0.2);
+    animation: winnerPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes winnerPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.winner-name {
+    font-size: 6rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 0.5rem;
+    text-shadow:
+        0 0 40px rgba(255, 255, 255, 0.5),
+        0 0 80px rgba(34, 197, 94, 0.5);
+}
+
+.winner-dept {
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.winner-emoji {
+    font-size: 4rem;
+    margin-top: 2rem;
+    animation: tada 1s ease infinite;
+}
+
+@keyframes tada {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(0);
+    }
+
+    10%,
+    20% {
+        transform: scale(0.9) rotate(-3deg);
+    }
+
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: scale(1.1) rotate(3deg);
+    }
+
+    40%,
+    60%,
+    80% {
+        transform: scale(1.1) rotate(-3deg);
+    }
+}
