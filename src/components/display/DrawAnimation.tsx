@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Prize } from '../../types/lottery'
+import { DrawMode, Prize } from '../../types/lottery'
 import { useLotteryStore } from '../../stores/lottery-store'
 
 interface DrawAnimationProps {
     prize: Prize
+    drawMode: DrawMode
 }
 
-export function DrawAnimation({ prize }: DrawAnimationProps) {
+export function DrawAnimation({ prize, drawMode }: DrawAnimationProps) {
     const { participants } = useLotteryStore()
     const [displayName, setDisplayName] = useState('')
     const [isSlowing, setIsSlowing] = useState(false)
@@ -53,6 +54,11 @@ export function DrawAnimation({ prize }: DrawAnimationProps) {
         <div className="draw-animation">
             <div className="draw-prize-name">
                 🎁 {prize.name}
+                {drawMode === 'one' && (
+                    <span className="prize-progress">
+                        {prize.drawnCount}/{prize.quantity}
+                    </span>
+                )}
             </div>
 
             <div className="draw-slot-machine">

@@ -348,11 +348,17 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
         const state = get()
         const winner = state.winners.find(w => w.id === winnerId)
         if (!winner) return
+        const prize = state.prizes.find(p => p.id === winner.prize.id)
+        const excludeWinners = prize?.excludeWinners ?? winner.prize.excludeWinners
+        const remainingWins = state.winners.filter(
+            w => w.id !== winnerId && w.participant.id === winner.participant.id
+        ).length
+        const shouldMarkWon = excludeWinners || remainingWins > 0
 
         set((state) => ({
             winners: state.winners.filter(w => w.id !== winnerId),
             participants: state.participants.map(p =>
-                p.id === winner.participant.id ? { ...p, hasWon: false } : p
+                p.id === winner.participant.id ? { ...p, hasWon: shouldMarkWon } : p
             ),
             prizes: state.prizes.map(p => {
                 if (p.id !== winner.prize.id) return p

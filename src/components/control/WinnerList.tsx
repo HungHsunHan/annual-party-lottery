@@ -42,7 +42,7 @@ export function WinnerList() {
             buttons: ['確認刪除', '取消'],
             defaultId: 1,
             title: '確認刪除',
-            message: '確定要刪除此中獎紀錄嗎？該人員將回到抽獎池。'
+            message: '確定要刪除此中獎紀錄嗎？是否回到抽獎池會依獎項設定與中獎紀錄決定。'
         })
 
         if (result === 0) {

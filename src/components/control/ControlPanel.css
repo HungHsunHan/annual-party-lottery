@@ -328,6 +328,13 @@
     justify-content: space-between;
     gap: 0.75rem;
     margin-bottom: 0.5rem;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+}
+
+.draw-control-header.dragging {
+    cursor: grabbing;
 }
 
 .draw-control-toggle {

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Participant, Prize } from '../../types/lottery'
+import { DrawMode, Participant, Prize } from '../../types/lottery'
 
 interface WinnerRevealProps {
     participants: Participant[]
     prize: Prize
+    drawMode: DrawMode
 }
 
 // 紙花顏色
@@ -12,7 +13,7 @@ const CONFETTI_COLORS = [
     '#5f27cd', '#00d2d3', '#ff6b81', '#ffeaa7', '#74b9ff'
 ]
 
-export function WinnerReveal({ participants, prize }: WinnerRevealProps) {
+export function WinnerReveal({ participants, prize, drawMode }: WinnerRevealProps) {
     const [confettiPieces, setConfettiPieces] = useState<Array<{
         id: number
         left: string
@@ -34,6 +35,11 @@ export function WinnerReveal({ participants, prize }: WinnerRevealProps) {
     }, [])
 
     const multiple = participants.length > 1
+    const densityClass = participants.length >= 16
+        ? 'dense'
+        : participants.length >= 9
+            ? 'compact'
+            : ''
 
     return (
         <div className="winner-reveal">
@@ -55,10 +61,17 @@ export function WinnerReveal({ participants, prize }: WinnerRevealProps) {
 
             <div className="winner-badge">🎉 恭喜中獎 🎉</div>
 
-            <div className="winner-prize-name">🎁 {prize.name}</div>
+            <div className="winner-prize-name">
+                🎁 {prize.name}
+                {drawMode === 'one' && (
+                    <span className="prize-progress">
+                        {prize.drawnCount}/{prize.quantity}
+                    </span>
+                )}
+            </div>
 
             {multiple ? (
-                <div className="winner-grid">
+                <div className={`winner-grid${densityClass ? ` ${densityClass}` : ''}`}>
                     {participants.map(participant => (
                         <div key={participant.id} className="winner-card-sm">
                             <div className="winner-name-sm">{participant.name}</div>

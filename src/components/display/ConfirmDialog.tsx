@@ -1,16 +1,24 @@
-import { Participant, Prize } from '../../types/lottery'
+import { DrawMode, Participant, Prize } from '../../types/lottery'
 
 interface ConfirmDialogProps {
     participants: Participant[]
     prize: Prize
+    drawMode: DrawMode
 }
 
-export function ConfirmDialog({ participants, prize }: ConfirmDialogProps) {
+export function ConfirmDialog({ participants, prize, drawMode }: ConfirmDialogProps) {
     const multiple = participants.length > 1
 
     return (
         <div className="confirm-dialog">
-            <div className="confirm-prize">🎁 {prize.name}</div>
+            <div className="confirm-prize">
+                🎁 {prize.name}
+                {drawMode === 'one' && (
+                    <span className="prize-progress">
+                        {prize.drawnCount}/{prize.quantity}
+                    </span>
+                )}
+            </div>
 
             {multiple ? (
                 <div className="confirm-winner-grid">
@@ -28,9 +36,7 @@ export function ConfirmDialog({ participants, prize }: ConfirmDialogProps) {
                 </div>
             )}
 
-            <div className="confirm-hint">
-                ⏳ 等待後台確認...
-            </div>
+            <div className="confirm-hint">To be continued...</div>
         </div>
     )
 }

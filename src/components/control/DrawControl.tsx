@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
 import { Participant } from '../../types/lottery'
 
@@ -9,6 +9,10 @@ interface DrawControlProps {
 }
 
 export function DrawControl({ onStateChange, onConfirm, isFloating }: DrawControlProps) {
+    const panelRef = useRef<HTMLDivElement | null>(null)
+    const dragState = useRef<{ offsetX: number; offsetY: number; pointerId: number } | null>(null)
+    const [floatingPosition, setFloatingPosition] = useState<{ x: number; y: number } | null>(null)
+    const [isDragging, setIsDragging] = useState(false)
     const {
         prizes,
         participants,
@@ -35,6 +39,50 @@ export function DrawControl({ onStateChange, onConfirm, isFloating }: DrawContro
     const displayPrize = currentPrize || nextPrize
     const [isCollapsed, setIsCollapsed] = useState(false)
     const pendingParticipants = currentDraw?.pendingParticipants ?? []
+
+    const clampPosition = (x: number, y: number) => {
+        const panel = panelRef.current
+        if (!panel) return { x, y }
+        const { width, height } = panel.getBoundingClientRect()
+        const margin = 12
+        const maxX = Math.max(margin, window.innerWidth - width - margin)
+        const maxY = Math.max(margin, window.innerHeight - height - margin)
+        return {
+            x: Math.min(Math.max(x, margin), maxX),
+            y: Math.min(Math.max(y, margin), maxY)
+        }
+    }
+
+    const handleDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
+        if (!isFloating || event.button !== 0) return
+        if ((event.target as HTMLElement).closest('button')) return
+        const panel = panelRef.current
+        if (!panel) return
+        const rect = panel.getBoundingClientRect()
+        dragState.current = {
+            offsetX: event.clientX - rect.left,
+            offsetY: event.clientY - rect.top,
+            pointerId: event.pointerId
+        }
+        setIsDragging(true)
+        event.currentTarget.setPointerCapture(event.pointerId)
+    }
+
+    const handleDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
+        const drag = dragState.current
+        if (!drag || drag.pointerId !== event.pointerId) return
+        const nextX = event.clientX - drag.offsetX
+        const nextY = event.clientY - drag.offsetY
+        setFloatingPosition(clampPosition(nextX, nextY))
+    }
+
+    const handleDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+        const drag = dragState.current
+        if (!drag || drag.pointerId !== event.pointerId) return
+        dragState.current = null
+        setIsDragging(false)
+        event.currentTarget.releasePointerCapture(event.pointerId)
+    }
 
     // 取得可抽獎的人員池
     const getEligibleParticipants = (): Participant[] => {
@@ -165,6 +213,12 @@ export function DrawControl({ onStateChange, onConfirm, isFloating }: DrawContro
     }
 
     const containerClass = isFloating ? `draw-control-floating${isCollapsed ? ' collapsed' : ''}` : ''
+    const floatingStyle = floatingPosition ? {
+        left: `${floatingPosition.x}px`,
+        top: `${floatingPosition.y}px`,
+        right: 'auto',
+        bottom: 'auto'
+    } : undefined
 
     // 抽獎進行中的控制（顯示在頂部條）
     if (!isFloating && systemState !== 'standby') {
@@ -230,8 +284,14 @@ export function DrawControl({ onStateChange, onConfirm, isFloating }: DrawContro
 
     // 待機狀態的浮動控制面板
     return (
-        <div className={containerClass}>
-            <div className="draw-control-header">
+        <div className={containerClass} ref={panelRef} style={floatingStyle}>
+            <div
+                className={`draw-control-header${isDragging ? ' dragging' : ''}`}
+                onPointerDown={handleDragStart}
+                onPointerMove={handleDragMove}
+                onPointerUp={handleDragEnd}
+                onPointerCancel={handleDragEnd}
+            >
                 <div className="draw-control-title">下一個獎項</div>
                 <button
                     className="draw-control-toggle"

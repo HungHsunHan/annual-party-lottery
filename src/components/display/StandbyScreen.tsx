@@ -1,12 +1,13 @@
-import { Prize } from '../../types/lottery'
+import { DrawMode, Prize } from '../../types/lottery'
 
 interface StandbyScreenProps {
     logo?: string
     prizes: Prize[]
     currentPrize?: Prize | null
+    drawMode: DrawMode
 }
 
-export function StandbyScreen({ logo, prizes, currentPrize }: StandbyScreenProps) {
+export function StandbyScreen({ logo, prizes, currentPrize, drawMode }: StandbyScreenProps) {
     return (
         <div className="standby-screen">
             {logo ? (
@@ -25,10 +26,13 @@ export function StandbyScreen({ logo, prizes, currentPrize }: StandbyScreenProps
             {currentPrize && (
                 <div className="prize-preview">
                     <div className="prize-preview-item">
-                        <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>🎁</span>
-                        <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'white' }}>
-                            {currentPrize.name}
-                        </span>
+                        <span className="prize-preview-icon">🎁</span>
+                        <span className="prize-preview-name">{currentPrize.name}</span>
+                        {drawMode === 'one' && (
+                            <span className="prize-progress">
+                                {currentPrize.drawnCount}/{currentPrize.quantity}
+                            </span>
+                        )}
                     </div>
                 </div>
             )}
