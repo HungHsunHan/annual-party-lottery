@@ -141,6 +141,6 @@ npm run electron:build
 
 ## 資料儲存位置
 
-備份檔案儲存在應用資料目錄：
-- macOS: `~/Library/Application Support/lottery-system/lottery-data/`
-- Windows: `%APPDATA%/lottery-system/lottery-data/`
+備份檔案儲存在應用程式同層的 `backup` 資料夾：
+- 開發環境：專案根目錄下的 `backup/`
+- 打包後：`exe` 同層的 `backup/`

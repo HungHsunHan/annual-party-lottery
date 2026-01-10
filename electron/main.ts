@@ -67,14 +67,14 @@ function createDisplayWindow() {
     })
 }
 
-// 獲取應用資料目錄
-function getAppDataPath(): string {
-    const userDataPath = app.getPath('userData')
-    const appDataPath = path.join(userDataPath, 'lottery-data')
-    if (!fs.existsSync(appDataPath)) {
-        fs.mkdirSync(appDataPath, { recursive: true })
+// 獲取備份資料夾（開發環境：專案根目錄，打包後：exe 同層）
+function getBackupDir(): string {
+    const baseDir = app.isPackaged ? path.dirname(process.execPath) : process.cwd()
+    const backupDir = path.join(baseDir, 'backup')
+    if (!fs.existsSync(backupDir)) {
+        fs.mkdirSync(backupDir, { recursive: true })
     }
-    return appDataPath
+    return backupDir
 }
 
 // IPC 處理器
@@ -134,15 +134,15 @@ function setupIpcHandlers() {
         }
     })
 
-    // 獲取應用資料路徑
+    // 獲取備份資料路徑
     ipcMain.handle('get-app-data-path', () => {
-        return getAppDataPath()
+        return getBackupDir()
     })
 
     // 備份狀態
     ipcMain.handle('save-backup', async (_, { filename, data }) => {
         try {
-            const backupPath = path.join(getAppDataPath(), filename)
+            const backupPath = path.join(getBackupDir(), filename)
             const buffer = Buffer.from(data, 'base64')
             fs.writeFileSync(backupPath, buffer)
             return backupPath
@@ -155,7 +155,7 @@ function setupIpcHandlers() {
     // 載入備份
     ipcMain.handle('load-backup', async (_, filename) => {
         try {
-            const backupPath = path.join(getAppDataPath(), filename)
+            const backupPath = path.join(getBackupDir(), filename)
             if (fs.existsSync(backupPath)) {
                 const buffer = fs.readFileSync(backupPath)
                 return buffer.toString('base64')
@@ -169,14 +169,14 @@ function setupIpcHandlers() {
 
     // 檢查備份是否存在
     ipcMain.handle('check-backup-exists', async (_, filename) => {
-        const backupPath = path.join(getAppDataPath(), filename)
+        const backupPath = path.join(getBackupDir(), filename)
         return fs.existsSync(backupPath)
     })
 
     // 列出所有備份檔案
     ipcMain.handle('list-backups', async () => {
         try {
-            const dataPath = getAppDataPath()
+            const dataPath = getBackupDir()
             const files = fs.readdirSync(dataPath)
             return files.filter(f => f.endsWith('.xlsx'))
         } catch (error) {
@@ -188,7 +188,7 @@ function setupIpcHandlers() {
     // 刪除備份
     ipcMain.handle('delete-backup', async (_, filename) => {
         try {
-            const backupPath = path.join(getAppDataPath(), filename)
+            const backupPath = path.join(getBackupDir(), filename)
             if (fs.existsSync(backupPath)) {
                 fs.unlinkSync(backupPath)
                 return true
