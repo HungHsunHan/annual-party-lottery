@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
 import { StandbyScreen } from './StandbyScreen'
-import { DrawAnimation } from './DrawAnimation'
 import { WinnerReveal } from './WinnerReveal'
 import { RevealCountdown } from './RevealCountdown'
 import { soundManager } from '../../utils/sound-manager'
@@ -27,9 +26,11 @@ export function DisplayScreen() {
     const [revealSeconds, setRevealSeconds] = useState(REVEAL_COUNTDOWN_SECONDS)
     const [isRevealReady, setIsRevealReady] = useState(false)
     const revealParticipantIds = currentDraw?.revealParticipants.map(participant => participant.id).join(',') ?? ''
+    const hasRevealParticipants = (currentDraw?.revealParticipants.length ?? 0) > 0
 
     useEffect(() => {
-        if (systemState !== 'revealing' || !(currentDraw?.revealParticipants.length ?? 0)) {
+        const shouldCountdown = systemState === 'drawing' || (systemState === 'revealing' && hasRevealParticipants)
+        if (!shouldCountdown) {
             setIsRevealReady(false)
             setRevealSeconds(REVEAL_COUNTDOWN_SECONDS)
             return
@@ -51,7 +52,7 @@ export function DisplayScreen() {
             clearInterval(interval)
             clearTimeout(timeout)
         }
-    }, [systemState, currentDraw?.prizeId, revealParticipantIds])
+    }, [systemState, currentDraw?.prizeId, revealParticipantIds, hasRevealParticipants])
 
     // 載入自訂音效
     useEffect(() => {
@@ -105,13 +106,14 @@ export function DisplayScreen() {
                 )}
 
                 {systemState === 'drawing' && currentPrize && (
-                    <DrawAnimation
+                    <RevealCountdown
+                        seconds={revealSeconds}
                         prize={currentPrize}
                         drawMode={drawMode}
                     />
                 )}
 
-                {systemState === 'revealing' && (currentDraw?.revealParticipants.length ?? 0) > 0 && currentPrize && (
+                {systemState === 'revealing' && hasRevealParticipants && currentPrize && (
                     isRevealReady ? (
                         <WinnerReveal
                             participants={currentDraw.revealParticipants}
