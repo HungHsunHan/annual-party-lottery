@@ -59,15 +59,16 @@ export function WinnerReveal({ participants, prize, drawMode }: WinnerRevealProp
                 ))}
             </div>
 
-            <div className="winner-badge">🎉 恭喜中獎 🎉</div>
-
-            <div className="winner-prize-name">
-                🎁 {prize.name}
-                {drawMode === 'one' && (
-                    <span className="prize-progress">
-                        {prize.drawnCount}/{prize.quantity}
-                    </span>
-                )}
+            <div className="winner-header">
+                <div className="winner-prize-name">
+                    🎁 {prize.name}
+                    {drawMode === 'one' && (
+                        <span className="prize-progress">
+                            {prize.drawnCount}/{prize.quantity}
+                        </span>
+                    )}
+                </div>
+                <div className="winner-badge">🎉 恭喜中獎 🎉</div>
             </div>
 
             {multiple ? (
