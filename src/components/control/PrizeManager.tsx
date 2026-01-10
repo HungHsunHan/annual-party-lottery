@@ -125,6 +125,7 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
     const [showAddModal, setShowAddModal] = useState(false)
     const [newPrizeName, setNewPrizeName] = useState('')
     const [newPrizeQty, setNewPrizeQty] = useState(1)
+    const [showCompleted, setShowCompleted] = useState(false)
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -158,10 +159,10 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
         const { active, over } = event
         if (!over || active.id === over.id) return
 
-        const oldIndex = prizes.findIndex(p => p.id === active.id)
-        const newIndex = prizes.findIndex(p => p.id === over.id)
+        const oldIndex = sortedPrizes.findIndex(p => p.id === active.id)
+        const newIndex = sortedPrizes.findIndex(p => p.id === over.id)
 
-        const newOrder = arrayMove(prizes, oldIndex, newIndex)
+        const newOrder = arrayMove(sortedPrizes, oldIndex, newIndex)
         reorderPrizes(newOrder)
         onUpdate()
     }
@@ -202,6 +203,11 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
     }
 
     const sortedPrizes = [...prizes].sort((a, b) => a.order - b.order)
+    const completedCount = sortedPrizes.filter(prize => prize.status === 'completed').length
+    const hasCompleted = completedCount > 0
+    const visiblePrizes = showCompleted
+        ? sortedPrizes
+        : sortedPrizes.filter(prize => prize.status !== 'completed')
 
     return (
         <div>
@@ -209,6 +215,16 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
                 <div className="card-header">
                     <h2 className="card-title">🎁 獎項管理</h2>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {hasCompleted && (
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setShowCompleted(prev => !prev)}
+                            >
+                                {showCompleted
+                                    ? `收折已完成 (${completedCount})`
+                                    : `展開已完成 (${completedCount})`}
+                            </button>
+                        )}
                         <button className="btn btn-secondary" onClick={handleImport}>
                             📥 匯入 Excel
                         </button>
@@ -228,7 +244,7 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
                     onDragEnd={handleDragEnd}
                 >
                     <SortableContext
-                        items={sortedPrizes.map(p => p.id)}
+                        items={visiblePrizes.map(p => p.id)}
                         strategy={verticalListSortingStrategy}
                     >
                         <div className="prize-list">
@@ -236,8 +252,12 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
                                 <p className="text-muted text-center p-6">
                                     尚無獎項，請匯入 Excel 或手動新增
                                 </p>
+                            ) : visiblePrizes.length === 0 ? (
+                                <p className="text-muted text-center p-6">
+                                    所有獎項已完成，請展開已完成項目查看
+                                </p>
                             ) : (
-                                sortedPrizes.map(prize => (
+                                visiblePrizes.map(prize => (
                                     <SortablePrizeItem
                                         key={prize.id}
                                         prize={prize}

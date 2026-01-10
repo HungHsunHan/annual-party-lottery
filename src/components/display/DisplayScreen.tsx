@@ -129,20 +129,6 @@ export function DisplayScreen() {
                     )
                 )}
             </div>
-
-            {/* 底部資訊列 */}
-            {displayPrize && (
-                <div className="display-footer">
-                    <div className="footer-info">
-                        <span className="footer-prize-name">🎁 {displayPrize.name}</span>
-                        {drawMode === 'one' && (
-                            <span className="prize-progress footer-prize-progress">
-                                {displayPrize.drawnCount}/{displayPrize.quantity}
-                            </span>
-                        )}
-                    </div>
-                </div>
-            )}
         </div>
     )
 }

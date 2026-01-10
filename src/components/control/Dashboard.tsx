@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
 
 interface DashboardProps {
@@ -6,6 +7,13 @@ interface DashboardProps {
 
 export function Dashboard({ onSync }: DashboardProps) {
     const { statistics, prizes, drawMode, setDrawMode, currentPrizeId, setCurrentPrize } = useLotteryStore()
+    const [showCompleted, setShowCompleted] = useState(false)
+    const sortedPrizes = [...prizes].sort((a, b) => a.order - b.order)
+    const completedCount = sortedPrizes.filter(prize => prize.status === 'completed').length
+    const visiblePrizes = showCompleted
+        ? sortedPrizes
+        : sortedPrizes.filter(prize => prize.status !== 'completed')
+    const hasCompleted = completedCount > 0
 
     // 找出下一個未完成的獎項
     const nextPrize = prizes
@@ -106,12 +114,26 @@ export function Dashboard({ onSync }: DashboardProps) {
             <div className="card" style={{ gridColumn: '1 / -1' }}>
                 <div className="card-header">
                     <h2 className="card-title">📋 獎項清單快覽</h2>
+                    {hasCompleted && (
+                        <button
+                            className="btn btn-sm btn-secondary"
+                            onClick={() => setShowCompleted(prev => !prev)}
+                        >
+                            {showCompleted
+                                ? `收折已完成 (${completedCount})`
+                                : `展開已完成 (${completedCount})`}
+                        </button>
+                    )}
                 </div>
                 <div className="prize-list" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {prizes.length === 0 ? (
                         <p className="text-muted text-center p-4">尚無獎項</p>
+                    ) : visiblePrizes.length === 0 ? (
+                        <p className="text-muted text-center p-4">
+                            所有獎項已完成，請展開已完成項目查看
+                        </p>
                     ) : (
-                        prizes.sort((a, b) => a.order - b.order).map((prize, index) => (
+                        visiblePrizes.map((prize, index) => (
                             <div
                                 key={prize.id}
                                 className={`prize-item ${prize.id === currentPrizeId ? 'current' : ''}`}
