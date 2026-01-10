@@ -241,11 +241,11 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
 
     setPendingParticipants: (participants) => {
         set((state) => ({
-            systemState: 'confirming',
+            systemState: 'revealing',
             currentDraw: state.currentDraw ? {
                 ...state.currentDraw,
                 pendingParticipants: participants,
-                revealParticipants: []
+                revealParticipants: participants
             } : null
         }))
     },
@@ -281,27 +281,34 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
             ...confirmTargets
         ]
 
-        set((state) => ({
-            winners: [...state.winners, ...newWinners],
-            participants: state.participants.map(p =>
-                confirmTargets.some(target => target.id === p.id) ? { ...p, hasWon: true } : p
-            ),
-            prizes: state.prizes.map(p =>
-                p.id === state.currentPrizeId ? {
-                    ...p,
-                    drawnCount: newDrawnCount,
-                    status: isCompleted ? 'completed' : 'incomplete'
-                } : p
-            ),
-            systemState: remainingPending.length > 0 ? 'confirming' : 'revealing',
-            currentDraw: state.currentDraw ? {
-                ...state.currentDraw,
-                drawnParticipants: nextDrawnParticipants,
-                confirmedCount: state.currentDraw.confirmedCount + confirmTargets.length,
-                pendingParticipants: remainingPending,
-                revealParticipants: remainingPending.length > 0 ? [] : nextDrawnParticipants
-            } : null
-        }))
+        set((state) => {
+            const currentRevealParticipants = state.currentDraw?.revealParticipants ?? []
+            const nextRevealParticipants = currentRevealParticipants.length > 0
+                ? currentRevealParticipants
+                : nextDrawnParticipants
+
+            return {
+                winners: [...state.winners, ...newWinners],
+                participants: state.participants.map(p =>
+                    confirmTargets.some(target => target.id === p.id) ? { ...p, hasWon: true } : p
+                ),
+                prizes: state.prizes.map(p =>
+                    p.id === state.currentPrizeId ? {
+                        ...p,
+                        drawnCount: newDrawnCount,
+                        status: isCompleted ? 'completed' : 'incomplete'
+                    } : p
+                ),
+                systemState: 'revealing',
+                currentDraw: state.currentDraw ? {
+                    ...state.currentDraw,
+                    drawnParticipants: nextDrawnParticipants,
+                    confirmedCount: state.currentDraw.confirmedCount + confirmTargets.length,
+                    pendingParticipants: remainingPending,
+                    revealParticipants: nextRevealParticipants
+                } : null
+            }
+        })
 
         get().updateStatistics()
     },
@@ -327,11 +334,11 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
             participant => participant.id !== participantId
         )
         set({
-            systemState: 'confirming',
+            systemState: 'revealing',
             currentDraw: state.currentDraw ? {
                 ...state.currentDraw,
                 pendingParticipants: remainingPending,
-                revealParticipants: []
+                revealParticipants: remainingPending.length > 0 ? remainingPending : state.currentDraw.revealParticipants
             } : null
         })
     },

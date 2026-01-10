@@ -3,9 +3,9 @@ import { useLotteryStore } from '../../stores/lottery-store'
 import { StandbyScreen } from './StandbyScreen'
 import { DrawAnimation } from './DrawAnimation'
 import { WinnerReveal } from './WinnerReveal'
-import { ConfirmDialog } from './ConfirmDialog'
 import { RevealCountdown } from './RevealCountdown'
 import { soundManager } from '../../utils/sound-manager'
+import { REVEAL_COUNTDOWN_SECONDS, REVEAL_COUNTDOWN_MS } from '../../constants/lottery'
 import './DisplayScreen.css'
 
 export function DisplayScreen() {
@@ -24,19 +24,20 @@ export function DisplayScreen() {
         .sort((a, b) => a.order - b.order)[0]
     const activePrize = currentPrize && currentPrize.status !== 'completed' ? currentPrize : null
     const displayPrize = activePrize || nextPrize || (systemState !== 'standby' ? currentPrize : null)
-    const [revealSeconds, setRevealSeconds] = useState(3)
+    const [revealSeconds, setRevealSeconds] = useState(REVEAL_COUNTDOWN_SECONDS)
     const [isRevealReady, setIsRevealReady] = useState(false)
+    const revealParticipantIds = currentDraw?.revealParticipants.map(participant => participant.id).join(',') ?? ''
 
     useEffect(() => {
         if (systemState !== 'revealing' || !(currentDraw?.revealParticipants.length ?? 0)) {
             setIsRevealReady(false)
-            setRevealSeconds(3)
+            setRevealSeconds(REVEAL_COUNTDOWN_SECONDS)
             return
         }
 
         setIsRevealReady(false)
-        setRevealSeconds(3)
-        let secondsRemaining = 3
+        setRevealSeconds(REVEAL_COUNTDOWN_SECONDS)
+        let secondsRemaining = REVEAL_COUNTDOWN_SECONDS
         const interval = setInterval(() => {
             secondsRemaining = Math.max(1, secondsRemaining - 1)
             setRevealSeconds(secondsRemaining)
@@ -44,13 +45,13 @@ export function DisplayScreen() {
         const timeout = setTimeout(() => {
             setIsRevealReady(true)
             clearInterval(interval)
-        }, 3000)
+        }, REVEAL_COUNTDOWN_MS)
 
         return () => {
             clearInterval(interval)
             clearTimeout(timeout)
         }
-    }, [systemState, currentDraw?.prizeId, currentDraw?.revealParticipants.length])
+    }, [systemState, currentDraw?.prizeId, revealParticipantIds])
 
     // 載入自訂音效
     useEffect(() => {
@@ -105,14 +106,6 @@ export function DisplayScreen() {
 
                 {systemState === 'drawing' && currentPrize && (
                     <DrawAnimation
-                        prize={currentPrize}
-                        drawMode={drawMode}
-                    />
-                )}
-
-                {systemState === 'confirming' && (currentDraw?.pendingParticipants.length ?? 0) > 0 && currentPrize && (
-                    <ConfirmDialog
-                        participants={currentDraw.pendingParticipants}
                         prize={currentPrize}
                         drawMode={drawMode}
                     />

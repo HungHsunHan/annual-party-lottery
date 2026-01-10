@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
 import { Participant } from '../../types/lottery'
+import { REVEAL_COUNTDOWN_MS } from '../../constants/lottery'
 
 interface DrawControlProps {
     onStateChange: () => void
@@ -13,6 +14,7 @@ export function DrawControl({ onStateChange, onConfirm, isFloating }: DrawContro
     const dragState = useRef<{ offsetX: number; offsetY: number; pointerId: number } | null>(null)
     const [floatingPosition, setFloatingPosition] = useState<{ x: number; y: number } | null>(null)
     const [isDragging, setIsDragging] = useState(false)
+    const [isRevealCountdownDone, setIsRevealCountdownDone] = useState(false)
     const {
         prizes,
         participants,
@@ -39,6 +41,24 @@ export function DrawControl({ onStateChange, onConfirm, isFloating }: DrawContro
     const displayPrize = currentPrize || nextPrize
     const [isCollapsed, setIsCollapsed] = useState(false)
     const pendingParticipants = currentDraw?.pendingParticipants ?? []
+    const revealSignature = currentDraw?.revealParticipants.map(participant => participant.id).join(',') ?? ''
+    const isRevealPhase = systemState === 'revealing' || systemState === 'confirming'
+
+    useEffect(() => {
+        if (!isRevealPhase || !revealSignature) {
+            setIsRevealCountdownDone(false)
+            return
+        }
+
+        setIsRevealCountdownDone(false)
+        const timeout = setTimeout(() => {
+            setIsRevealCountdownDone(true)
+        }, REVEAL_COUNTDOWN_MS)
+
+        return () => {
+            clearTimeout(timeout)
+        }
+    }, [isRevealPhase, revealSignature])
 
     const clampPosition = (x: number, y: number) => {
         const panel = panelRef.current
@@ -240,7 +260,13 @@ export function DrawControl({ onStateChange, onConfirm, isFloating }: DrawContro
                     </div>
                 )}
 
-                {systemState === 'confirming' && pendingParticipants.length > 0 && (
+                {isRevealPhase && pendingParticipants.length > 0 && !isRevealCountdownDone && (
+                    <div className="flex items-center gap-2">
+                        <span>⏳ 倒數揭曉中...</span>
+                    </div>
+                )}
+
+                {isRevealPhase && pendingParticipants.length > 0 && isRevealCountdownDone && (
                     <div className="flex items-center gap-4" style={{ flex: 1, justifyContent: 'flex-end' }}>
                         <div className="confirm-list">
                             <div className="confirm-summary">
@@ -270,7 +296,7 @@ export function DrawControl({ onStateChange, onConfirm, isFloating }: DrawContro
                     </div>
                 )}
 
-                {systemState === 'revealing' && (
+                {isRevealPhase && pendingParticipants.length === 0 && (
                     <div className="flex items-center gap-2">
                         <span>🎉 恭喜中獎！</span>
                         <button className="btn btn-secondary" onClick={handleContinue}>
