@@ -104,6 +104,17 @@ class SoundManager {
         this.sounds.set(type, audio)
     }
 
+    // 清除自訂音效並回復預設
+    clearCustomSound(type: SoundType) {
+        this.customSounds.delete(type)
+        const currentSound = this.sounds.get(type)
+        if (currentSound) {
+            currentSound.pause()
+            currentSound.currentTime = 0
+        }
+        this.sounds.set(type, this.createDefaultSound(type))
+    }
+
     // 播放音效
     play(type: SoundType) {
         const sound = this.sounds.get(type)

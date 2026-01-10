@@ -58,11 +58,20 @@ export function DisplayScreen() {
     useEffect(() => {
         if (customAssets.sounds?.rolling) {
             soundManager.setCustomSound('rolling', customAssets.sounds.rolling)
+        } else if (soundManager.hasCustomSound('rolling')) {
+            soundManager.clearCustomSound('rolling')
         }
         if (customAssets.sounds?.winner) {
             soundManager.setCustomSound('winner', customAssets.sounds.winner)
+        } else if (soundManager.hasCustomSound('winner')) {
+            soundManager.clearCustomSound('winner')
         }
-    }, [customAssets.sounds])
+        if (customAssets.sounds?.countdown) {
+            soundManager.setCustomSound('countdown', customAssets.sounds.countdown)
+        } else if (soundManager.hasCustomSound('countdown')) {
+            soundManager.clearCustomSound('countdown')
+        }
+    }, [customAssets.sounds?.rolling, customAssets.sounds?.winner, customAssets.sounds?.countdown])
 
     // 根據狀態播放/停止音效
     useEffect(() => {

@@ -35,6 +35,16 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
         }
     }
 
+    const handleRemoveLogo = () => {
+        setCustomAssets({ logo: undefined })
+        onUpdate()
+    }
+
+    const handleRemoveBackground = () => {
+        setCustomAssets({ background: undefined })
+        onUpdate()
+    }
+
     const handleUploadSound = async (type: 'rolling' | 'winner' | 'countdown') => {
         const result = await window.electronAPI.selectAudio()
         if (result) {
@@ -50,6 +60,16 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                 message: `音效已更新`
             })
         }
+    }
+
+    const handleRemoveSound = (type: 'rolling' | 'winner' | 'countdown') => {
+        setCustomAssets({
+            sounds: {
+                ...customAssets.sounds,
+                [type]: undefined
+            }
+        })
+        onUpdate()
     }
 
     const handleLoadSnapshot = async (filename: string) => {
@@ -133,6 +153,18 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                                         className="asset-preview"
                                     />
                                     <p className="text-sm text-muted">點擊更換 Logo</p>
+                                    <div className="asset-actions">
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-danger asset-remove-btn"
+                                            onClick={(event) => {
+                                                event.stopPropagation()
+                                                handleRemoveLogo()
+                                            }}
+                                        >
+                                            移除
+                                        </button>
+                                    </div>
                                 </>
                             ) : (
                                 <>
@@ -152,6 +184,18 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                                         className="asset-preview"
                                     />
                                     <p className="text-sm text-muted">點擊更換背景</p>
+                                    <div className="asset-actions">
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-danger asset-remove-btn"
+                                            onClick={(event) => {
+                                                event.stopPropagation()
+                                                handleRemoveBackground()
+                                            }}
+                                        >
+                                            移除
+                                        </button>
+                                    </div>
                                 </>
                             ) : (
                                 <>
@@ -174,7 +218,21 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎵</div>
                             <p>抽獎滾動音效</p>
                             {customAssets.sounds?.rolling && (
-                                <span className="badge badge-completed mt-2">已上傳</span>
+                                <>
+                                    <span className="badge badge-completed mt-2">已上傳</span>
+                                    <div className="asset-actions">
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-danger asset-remove-btn"
+                                            onClick={(event) => {
+                                                event.stopPropagation()
+                                                handleRemoveSound('rolling')
+                                            }}
+                                        >
+                                            移除
+                                        </button>
+                                    </div>
+                                </>
                             )}
                         </div>
 
@@ -185,7 +243,21 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
                             <p>中獎音效</p>
                             {customAssets.sounds?.winner && (
-                                <span className="badge badge-completed mt-2">已上傳</span>
+                                <>
+                                    <span className="badge badge-completed mt-2">已上傳</span>
+                                    <div className="asset-actions">
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-danger asset-remove-btn"
+                                            onClick={(event) => {
+                                                event.stopPropagation()
+                                                handleRemoveSound('winner')
+                                            }}
+                                        >
+                                            移除
+                                        </button>
+                                    </div>
+                                </>
                             )}
                         </div>
 
@@ -196,7 +268,21 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⏱️</div>
                             <p>倒數音效</p>
                             {customAssets.sounds?.countdown && (
-                                <span className="badge badge-completed mt-2">已上傳</span>
+                                <>
+                                    <span className="badge badge-completed mt-2">已上傳</span>
+                                    <div className="asset-actions">
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-danger asset-remove-btn"
+                                            onClick={(event) => {
+                                                event.stopPropagation()
+                                                handleRemoveSound('countdown')
+                                            }}
+                                        >
+                                            移除
+                                        </button>
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>

@@ -304,6 +304,16 @@
     margin-bottom: 0.5rem;
 }
 
+.asset-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+}
+
+.asset-remove-btn {
+    box-shadow: none;
+}
+
 /* 抽獎控制浮動面板 */
 .draw-control-floating {
     position: fixed;
