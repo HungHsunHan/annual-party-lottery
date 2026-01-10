@@ -93,11 +93,6 @@ export function ControlPanel() {
                     {activeTab === 'settings' && <SettingsPanel onUpdate={syncToDisplay} />}
                 </div>
             </main>
-
-            {/* 抽獎操作面板（浮動） */}
-            {systemState === 'standby' && (
-                <DrawControl onStateChange={syncToDisplay} onConfirm={() => { handleAutoBackup(); syncToDisplay(); }} isFloating />
-            )}
         </div>
     )
 }

@@ -1,12 +1,25 @@
 import { useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
+import { Participant } from '../../types/lottery'
 
 interface DashboardProps {
     onSync: () => void
 }
 
 export function Dashboard({ onSync }: DashboardProps) {
-    const { statistics, prizes, drawMode, setDrawMode, currentPrizeId, setCurrentPrize } = useLotteryStore()
+    const {
+        statistics,
+        prizes,
+        participants,
+        drawMode,
+        setDrawMode,
+        currentPrizeId,
+        setCurrentPrize,
+        systemState,
+        startDrawing,
+        setPendingParticipants,
+        setSystemState
+    } = useLotteryStore()
     const [showCompleted, setShowCompleted] = useState(false)
     const sortedPrizes = [...prizes].sort((a, b) => a.order - b.order)
     const completedCount = sortedPrizes.filter(prize => prize.status === 'completed').length
@@ -24,6 +37,60 @@ export function Dashboard({ onSync }: DashboardProps) {
     const currentPrize = currentPrizeId
         ? prizes.find(p => p.id === currentPrizeId)
         : nextPrize
+
+    const getEligibleParticipants = (): Participant[] => {
+        if (!currentPrize) return []
+
+        if (currentPrize.excludeWinners) {
+            return participants.filter(p => !p.hasWon)
+        }
+        return participants
+    }
+
+    const pickRandomParticipants = (count: number, excludeIds: Set<string> = new Set()) => {
+        const eligible = getEligibleParticipants().filter(p => !excludeIds.has(p.id))
+        if (eligible.length === 0 || count <= 0) return []
+
+        const pool = [...eligible]
+        for (let i = pool.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[pool[i], pool[j]] = [pool[j], pool[i]]
+        }
+
+        return pool.slice(0, Math.min(count, pool.length))
+    }
+
+    const handleStartDraw = () => {
+        if (!currentPrize) return
+        const remainingSlots = currentPrize.quantity - currentPrize.drawnCount
+        if (remainingSlots <= 0) return
+
+        if (!currentPrizeId) {
+            setCurrentPrize(currentPrize.id)
+        }
+
+        startDrawing()
+        onSync()
+
+        setTimeout(() => {
+            const drawCount = drawMode === 'all' ? remainingSlots : 1
+            const winners = pickRandomParticipants(drawCount)
+            if (winners.length > 0) {
+                setPendingParticipants(winners)
+                onSync()
+                return
+            }
+            setSystemState('standby')
+            onSync()
+        }, 100)
+    }
+
+    const eligibleCount = getEligibleParticipants().length
+    const remainingSlots = currentPrize ? currentPrize.quantity - currentPrize.drawnCount : 0
+    const canDraw = currentPrize &&
+        remainingSlots > 0 &&
+        eligibleCount > 0 &&
+        systemState === 'standby'
 
     return (
         <div className="dashboard">
@@ -64,7 +131,7 @@ export function Dashboard({ onSync }: DashboardProps) {
             <div className="card" style={{ gridColumn: '1 / -1' }}>
                 <div className="card-header">
                     <h2 className="card-title">🎯 當前/下一個獎項</h2>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                         {(['one', 'all'] as const).map(mode => (
                             <button
                                 key={mode}
@@ -100,6 +167,23 @@ export function Dashboard({ onSync }: DashboardProps) {
                                     {currentPrize.status === 'incomplete' && '未完成'}
                                     {currentPrize.status === 'completed' && '已完成'}
                                 </span>
+                            </div>
+                            <div
+                                className="mt-3"
+                                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}
+                            >
+                                <span className="text-muted" style={{ fontSize: '0.875rem' }}>
+                                    可抽人數：{eligibleCount} 人
+                                    {!currentPrize.excludeWinners && <span style={{ color: '#fbbf24' }}> (含已中獎)</span>}
+                                </span>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={handleStartDraw}
+                                    disabled={!canDraw}
+                                    style={{ marginLeft: 'auto' }}
+                                >
+                                    🎲 開始抽獎
+                                </button>
                             </div>
                         </div>
                     </div>
