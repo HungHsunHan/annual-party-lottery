@@ -29,9 +29,9 @@ interface LotteryActions {
     // 抽獎流程
     setCurrentPrize: (prizeId: string | null) => void
     startDrawing: () => void
-    setDrawnParticipant: (participant: Participant) => void
-    confirmWinner: () => void
-    rejectAndRedraw: () => void
+    setPendingParticipants: (participants: Participant[]) => void
+    confirmWinners: (participantIds?: string[]) => void
+    rejectAndRedraw: (participantId?: string) => void
     finishCurrentPrizeDraw: () => void
 
     // 中獎者管理
@@ -196,9 +196,24 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
         if (prizeId) {
             set((state) => ({
                 currentPrizeId: prizeId,
-                prizes: state.prizes.map(p =>
-                    p.id === prizeId ? { ...p, status: 'in-progress' } : p
-                )
+                prizes: state.prizes.map(p => {
+                    if (p.id === prizeId) {
+                        if (p.status === 'completed' || p.drawnCount >= p.quantity) {
+                            return { ...p, status: 'completed' }
+                        }
+                        return { ...p, status: 'in-progress' }
+                    }
+                    if (p.status === 'in-progress') {
+                        if (p.drawnCount >= p.quantity) {
+                            return { ...p, status: 'completed' }
+                        }
+                        if (p.drawnCount > 0) {
+                            return { ...p, status: 'incomplete' }
+                        }
+                        return { ...p, status: 'pending' }
+                    }
+                    return p
+                })
             }))
         } else {
             set({ currentPrizeId: null })
@@ -218,43 +233,58 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
                 prizeId: currentPrize.id,
                 drawnParticipants: [],
                 confirmedCount: 0,
-                pendingParticipant: null
+                pendingParticipants: [],
+                revealParticipants: []
             }
         })
     },
 
-    setDrawnParticipant: (participant) => {
+    setPendingParticipants: (participants) => {
         set((state) => ({
             systemState: 'confirming',
             currentDraw: state.currentDraw ? {
                 ...state.currentDraw,
-                pendingParticipant: participant
+                pendingParticipants: participants,
+                revealParticipants: []
             } : null
         }))
     },
 
-    confirmWinner: () => {
+    confirmWinners: (participantIds) => {
         const state = get()
-        if (!state.currentDraw?.pendingParticipant || !state.currentPrizeId) return
+        if (!state.currentDraw || !state.currentPrizeId) return
 
-        const currentPrize = state.prizes.find(p => p.id === state.currentPrizeId)!
-        const participant = state.currentDraw.pendingParticipant
+        const currentPrize = state.prizes.find(p => p.id === state.currentPrizeId)
+        if (!currentPrize) return
 
-        const newWinner: Winner = {
+        const pendingParticipants = state.currentDraw.pendingParticipants
+        const confirmTargets = participantIds && participantIds.length > 0
+            ? pendingParticipants.filter(p => participantIds.includes(p.id))
+            : pendingParticipants
+        if (confirmTargets.length === 0) return
+
+        const newWinners: Winner[] = confirmTargets.map(participant => ({
             id: generateId(),
             participant,
             prize: currentPrize,
             drawnAt: new Date(),
             confirmed: true
-        }
+        }))
 
-        const newDrawnCount = currentPrize.drawnCount + 1
+        const newDrawnCount = currentPrize.drawnCount + confirmTargets.length
         const isCompleted = newDrawnCount >= currentPrize.quantity
+        const remainingPending = pendingParticipants.filter(
+            participant => !confirmTargets.some(target => target.id === participant.id)
+        )
+        const nextDrawnParticipants = [
+            ...(state.currentDraw?.drawnParticipants ?? []),
+            ...confirmTargets
+        ]
 
         set((state) => ({
-            winners: [...state.winners, newWinner],
+            winners: [...state.winners, ...newWinners],
             participants: state.participants.map(p =>
-                p.id === participant.id ? { ...p, hasWon: true } : p
+                confirmTargets.some(target => target.id === p.id) ? { ...p, hasWon: true } : p
             ),
             prizes: state.prizes.map(p =>
                 p.id === state.currentPrizeId ? {
@@ -263,25 +293,45 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
                     status: isCompleted ? 'completed' : 'incomplete'
                 } : p
             ),
-            systemState: 'revealing',
+            systemState: remainingPending.length > 0 ? 'confirming' : 'revealing',
             currentDraw: state.currentDraw ? {
                 ...state.currentDraw,
-                drawnParticipants: [...state.currentDraw.drawnParticipants, participant],
-                confirmedCount: state.currentDraw.confirmedCount + 1,
-                pendingParticipant: null
+                drawnParticipants: nextDrawnParticipants,
+                confirmedCount: state.currentDraw.confirmedCount + confirmTargets.length,
+                pendingParticipants: remainingPending,
+                revealParticipants: remainingPending.length > 0 ? [] : nextDrawnParticipants
             } : null
         }))
 
         get().updateStatistics()
     },
 
-    rejectAndRedraw: () => {
-        // 放棄：回到抽獎池，立刻重抽
+    rejectAndRedraw: (participantId) => {
+        const state = get()
+        if (!state.currentDraw) return
+
+        if (!participantId) {
+            // 放棄：回到抽獎池，立刻重抽
+            set({
+                systemState: 'drawing',
+                currentDraw: state.currentDraw ? {
+                    ...state.currentDraw,
+                    pendingParticipants: [],
+                    revealParticipants: []
+                } : null
+            })
+            return
+        }
+
+        const remainingPending = state.currentDraw.pendingParticipants.filter(
+            participant => participant.id !== participantId
+        )
         set({
-            systemState: 'drawing',
-            currentDraw: get().currentDraw ? {
-                ...get().currentDraw!,
-                pendingParticipant: null
+            systemState: 'confirming',
+            currentDraw: state.currentDraw ? {
+                ...state.currentDraw,
+                pendingParticipants: remainingPending,
+                revealParticipants: []
             } : null
         })
     },

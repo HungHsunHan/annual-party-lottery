@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Participant, Prize } from '../../types/lottery'
 
 interface WinnerRevealProps {
-    participant: Participant
+    participants: Participant[]
     prize: Prize
 }
 
@@ -12,7 +12,7 @@ const CONFETTI_COLORS = [
     '#5f27cd', '#00d2d3', '#ff6b81', '#ffeaa7', '#74b9ff'
 ]
 
-export function WinnerReveal({ participant, prize }: WinnerRevealProps) {
+export function WinnerReveal({ participants, prize }: WinnerRevealProps) {
     const [confettiPieces, setConfettiPieces] = useState<Array<{
         id: number
         left: string
@@ -32,6 +32,8 @@ export function WinnerReveal({ participant, prize }: WinnerRevealProps) {
         }))
         setConfettiPieces(pieces)
     }, [])
+
+    const multiple = participants.length > 1
 
     return (
         <div className="winner-reveal">
@@ -55,10 +57,21 @@ export function WinnerReveal({ participant, prize }: WinnerRevealProps) {
 
             <div className="winner-prize-name">🎁 {prize.name}</div>
 
-            <div className="winner-card">
-                <div className="winner-name">{participant.name}</div>
-                <div className="winner-dept">{participant.department}</div>
-            </div>
+            {multiple ? (
+                <div className="winner-grid">
+                    {participants.map(participant => (
+                        <div key={participant.id} className="winner-card-sm">
+                            <div className="winner-name-sm">{participant.name}</div>
+                            <div className="winner-dept-sm">{participant.department}</div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="winner-card">
+                    <div className="winner-name">{participants[0]?.name}</div>
+                    <div className="winner-dept">{participants[0]?.department}</div>
+                </div>
+            )}
 
             <div className="winner-emoji">🏆</div>
         </div>

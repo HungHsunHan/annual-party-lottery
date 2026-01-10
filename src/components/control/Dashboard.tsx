@@ -1,10 +1,10 @@
 import { useLotteryStore } from '../../stores/lottery-store'
 
 interface DashboardProps {
-    onStartDraw: () => void
+    onSync: () => void
 }
 
-export function Dashboard({ onStartDraw }: DashboardProps) {
+export function Dashboard({ onSync }: DashboardProps) {
     const { statistics, prizes, drawMode, setDrawMode, currentPrizeId, setCurrentPrize } = useLotteryStore()
 
     // 找出下一個未完成的獎項
@@ -94,18 +94,6 @@ export function Dashboard({ onStartDraw }: DashboardProps) {
                                 </span>
                             </div>
                         </div>
-                        <div style={{ marginLeft: 'auto' }}>
-                            <button
-                                className="btn btn-primary btn-lg"
-                                onClick={() => {
-                                    setCurrentPrize(currentPrize.id)
-                                    onStartDraw()
-                                }}
-                                disabled={currentPrize.status === 'completed'}
-                            >
-                                🎲 開始抽獎
-                            </button>
-                        </div>
                     </div>
                 ) : (
                     <p className="text-muted text-center p-6">
@@ -127,7 +115,10 @@ export function Dashboard({ onStartDraw }: DashboardProps) {
                             <div
                                 key={prize.id}
                                 className={`prize-item ${prize.id === currentPrizeId ? 'current' : ''}`}
-                                onClick={() => setCurrentPrize(prize.id)}
+                                onClick={() => {
+                                    setCurrentPrize(prize.id)
+                                    onSync()
+                                }}
                                 style={{ cursor: 'pointer' }}
                             >
                                 <span style={{

@@ -69,7 +69,8 @@ export interface LotteryState {
         prizeId: string
         drawnParticipants: Participant[]
         confirmedCount: number
-        pendingParticipant: Participant | null
+        pendingParticipants: Participant[]
+        revealParticipants: Participant[]
     } | null
 
     // 抽獎設定

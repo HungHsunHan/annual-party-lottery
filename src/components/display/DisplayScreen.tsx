@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
 import { StandbyScreen } from './StandbyScreen'
 import { DrawAnimation } from './DrawAnimation'
@@ -17,6 +17,10 @@ export function DisplayScreen() {
     } = useLotteryStore()
 
     const currentPrize = currentPrizeId ? prizes.find(p => p.id === currentPrizeId) : null
+    const nextPrize = prizes
+        .filter(p => p.status !== 'completed')
+        .sort((a, b) => a.order - b.order)[0]
+    const displayPrize = currentPrize || nextPrize
 
     // 載入自訂音效
     useEffect(() => {
@@ -62,6 +66,7 @@ export function DisplayScreen() {
                     <StandbyScreen
                         logo={customAssets.logo}
                         prizes={prizes}
+                        currentPrize={displayPrize}
                     />
                 )}
 
@@ -71,16 +76,16 @@ export function DisplayScreen() {
                     />
                 )}
 
-                {systemState === 'confirming' && currentDraw?.pendingParticipant && currentPrize && (
+                {systemState === 'confirming' && (currentDraw?.pendingParticipants.length ?? 0) > 0 && currentPrize && (
                     <ConfirmDialog
-                        participant={currentDraw.pendingParticipant}
+                        participants={currentDraw.pendingParticipants}
                         prize={currentPrize}
                     />
                 )}
 
-                {systemState === 'revealing' && currentDraw?.pendingParticipant && currentPrize && (
+                {systemState === 'revealing' && (currentDraw?.revealParticipants.length ?? 0) > 0 && currentPrize && (
                     <WinnerReveal
-                        participant={currentDraw.pendingParticipant}
+                        participants={currentDraw.revealParticipants}
                         prize={currentPrize}
                     />
                 )}
@@ -89,9 +94,9 @@ export function DisplayScreen() {
             {/* 底部資訊列 */}
             <div className="display-footer">
                 <div className="footer-info">
-                    {currentPrize && (
+                    {displayPrize && (
                         <span>
-                            🎁 {currentPrize.name} ({currentPrize.drawnCount}/{currentPrize.quantity})
+                            🎁 {displayPrize.name}
                         </span>
                     )}
                 </div>

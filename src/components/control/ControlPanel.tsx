@@ -86,7 +86,7 @@ export function ControlPanel() {
 
                 {/* 標籤內容 */}
                 <div className="tab-content">
-                    {activeTab === 'dashboard' && <Dashboard onStartDraw={() => setActiveTab('dashboard')} />}
+                    {activeTab === 'dashboard' && <Dashboard onSync={syncToDisplay} />}
                     {activeTab === 'prizes' && <PrizeManager onUpdate={syncToDisplay} />}
                     {activeTab === 'participants' && <ParticipantManager onUpdate={syncToDisplay} />}
                     {activeTab === 'winners' && <WinnerList />}
