@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
-import { exportWinners } from '../../utils/excel-handler'
+import { exportWinners, importWinners } from '../../utils/excel-handler'
 
 type SortBy = 'time' | 'name' | 'prize'
 
-export function WinnerList() {
-    const { winners, removeWinner, prizes } = useLotteryStore()
+interface WinnerListProps {
+    onUpdate: () => void
+}
+
+export function WinnerList({ onUpdate }: WinnerListProps) {
+    const { winners, removeWinner, prizes, participants } = useLotteryStore()
     const [sortBy, setSortBy] = useState<SortBy>('time')
 
     const handleExport = async () => {
@@ -36,6 +40,84 @@ export function WinnerList() {
         }
     }
 
+    const handleImport = async () => {
+        if (participants.length === 0 || prizes.length === 0) {
+            await window.electronAPI.showMessage({
+                type: 'warning',
+                title: '無法匯入',
+                message: '請先匯入人員名單與獎項名單，再匯入中獎資訊。'
+            })
+            return
+        }
+
+        const filePath = await window.electronAPI.selectFile({
+            filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
+        })
+        if (!filePath) return
+
+        const base64Data = await window.electronAPI.readFile(filePath)
+        if (!base64Data) {
+            await window.electronAPI.showMessage({
+                type: 'error',
+                title: '匯入失敗',
+                message: '無法讀取檔案，請確認檔案是否損壞或格式正確。'
+            })
+            return
+        }
+
+        const result = importWinners(base64Data, participants, prizes)
+        if (result.totalRows === 0 || result.winners.length === 0) {
+            await window.electronAPI.showMessage({
+                type: 'warning',
+                title: '匯入結果',
+                message: '未偵測到有效的中獎資料，請確認檔案內容。'
+            })
+            return
+        }
+
+        const winnerParticipantIds = new Set(result.winners.map(w => w.participant.id))
+        const prizeCounts = new Map<string, number>()
+        result.winners.forEach(w => {
+            prizeCounts.set(w.prize.id, (prizeCounts.get(w.prize.id) ?? 0) + 1)
+        })
+
+        const updatedParticipants = participants.map(p => ({
+            ...p,
+            hasWon: winnerParticipantIds.has(p.id)
+        }))
+        const updatedPrizes = prizes.map(p => {
+            const count = prizeCounts.get(p.id) ?? 0
+            const status = count >= p.quantity ? 'completed' : count > 0 ? 'incomplete' : 'pending'
+            return { ...p, drawnCount: count, status }
+        })
+
+        const participantsById = new Map(updatedParticipants.map(p => [p.id, p]))
+        const prizesById = new Map(updatedPrizes.map(p => [p.id, p]))
+        const normalizedWinners = result.winners.map(w => ({
+            ...w,
+            participant: participantsById.get(w.participant.id) ?? w.participant,
+            prize: prizesById.get(w.prize.id) ?? w.prize
+        }))
+
+        useLotteryStore.setState({
+            participants: updatedParticipants,
+            prizes: updatedPrizes,
+            winners: normalizedWinners
+        })
+        useLotteryStore.getState().updateStatistics()
+        onUpdate()
+
+        const warningMessage = result.skippedRows > 0
+            ? `，已略過 ${result.skippedRows} 筆無法對應的資料`
+            : ''
+
+        await window.electronAPI.showMessage({
+            type: 'info',
+            title: '匯入成功',
+            message: `成功匯入 ${result.winners.length} 筆中獎資料${warningMessage}。`
+        })
+    }
+
     const handleRemoveWinner = async (winnerId: string) => {
         const result = await window.electronAPI.showMessage({
             type: 'question',
@@ -47,6 +129,7 @@ export function WinnerList() {
 
         if (result === 0) {
             removeWinner(winnerId)
+            onUpdate()
         }
     }
 
@@ -75,6 +158,9 @@ export function WinnerList() {
                         <option value="name">依姓名排序</option>
                         <option value="prize">依獎項排序</option>
                     </select>
+                    <button className="btn btn-secondary" onClick={handleImport}>
+                        📥 匯入 Excel
+                    </button>
                     <button className="btn btn-primary" onClick={handleExport}>
                         📤 匯出 Excel
                     </button>

@@ -86,6 +86,7 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
             if (data) {
                 useLotteryStore.getState().setPrizes(data.prizes)
                 useLotteryStore.getState().setParticipants(data.participants)
+                useLotteryStore.setState({ winners: data.winners })
                 onUpdate()
                 await window.electronAPI.showMessage({
                     type: 'info',

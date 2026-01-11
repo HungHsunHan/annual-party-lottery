@@ -13,7 +13,7 @@ type Tab = 'dashboard' | 'prizes' | 'participants' | 'winners' | 'settings'
 
 export function ControlPanel() {
     const [activeTab, setActiveTab] = useState<Tab>('dashboard')
-    const { prizes, winners, participants, systemState } = useLotteryStore()
+    const { systemState } = useLotteryStore()
 
     const syncToDisplay = () => {
         const state = useLotteryStore.getState().getFullState()
@@ -21,11 +21,18 @@ export function ControlPanel() {
     }
 
     const handleAutoBackup = async () => {
-        await saveAutoBackup(prizes, winners, participants)
+        const state = useLotteryStore.getState()
+        await saveAutoBackup(state.prizes, state.winners, state.participants)
+    }
+
+    const handleDataUpdate = async () => {
+        await handleAutoBackup()
+        syncToDisplay()
     }
 
     const handleCreateSnapshot = async () => {
-        const path = await createSnapshot(prizes, winners, participants)
+        const state = useLotteryStore.getState()
+        const path = await createSnapshot(state.prizes, state.winners, state.participants)
         if (path) {
             await window.electronAPI.showMessage({
                 type: 'info',
@@ -80,17 +87,17 @@ export function ControlPanel() {
                 {/* 頂部抽獎控制區 */}
                 {systemState !== 'standby' && (
                     <div className="draw-control-bar">
-                        <DrawControl onStateChange={syncToDisplay} onConfirm={() => { handleAutoBackup(); syncToDisplay(); }} />
+                        <DrawControl onStateChange={syncToDisplay} onConfirm={handleDataUpdate} />
                     </div>
                 )}
 
                 {/* 標籤內容 */}
                 <div className="tab-content">
                     {activeTab === 'dashboard' && <Dashboard onSync={syncToDisplay} />}
-                    {activeTab === 'prizes' && <PrizeManager onUpdate={syncToDisplay} />}
-                    {activeTab === 'participants' && <ParticipantManager onUpdate={syncToDisplay} />}
-                    {activeTab === 'winners' && <WinnerList />}
-                    {activeTab === 'settings' && <SettingsPanel onUpdate={syncToDisplay} />}
+                    {activeTab === 'prizes' && <PrizeManager onUpdate={handleDataUpdate} />}
+                    {activeTab === 'participants' && <ParticipantManager onUpdate={handleDataUpdate} />}
+                    {activeTab === 'winners' && <WinnerList onUpdate={handleDataUpdate} />}
+                    {activeTab === 'settings' && <SettingsPanel onUpdate={handleDataUpdate} />}
                 </div>
             </main>
         </div>

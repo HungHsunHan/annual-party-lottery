@@ -47,11 +47,12 @@ function App() {
                 if (backup) {
                     useLotteryStore.getState().setPrizes(backup.prizes)
                     useLotteryStore.getState().setParticipants(backup.participants)
-                    // Winners 需要重新建立關聯
-                    backup.winners.forEach(w => {
-                        useLotteryStore.setState((state) => ({
-                            winners: [...state.winners, w]
-                        }))
+                    useLotteryStore.setState({ winners: backup.winners })
+                } else {
+                    await window.electronAPI.showMessage({
+                        type: 'error',
+                        title: '恢復失敗',
+                        message: '備份資料缺漏或格式不一致，無法恢復。'
                     })
                 }
             }

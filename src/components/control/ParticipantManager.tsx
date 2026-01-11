@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
-import { importParticipants } from '../../utils/excel-handler'
+import { exportParticipants, importParticipants } from '../../utils/excel-handler'
 
 interface ParticipantManagerProps {
     onUpdate: () => void
@@ -61,6 +61,34 @@ export function ParticipantManager({ onUpdate }: ParticipantManagerProps) {
         }
     }
 
+    const handleExport = async () => {
+        if (participants.length === 0) {
+            await window.electronAPI.showMessage({
+                type: 'warning',
+                title: '無法匯出',
+                message: '尚無人員名單可匯出'
+            })
+            return
+        }
+
+        const filePath = await window.electronAPI.saveFile({
+            filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
+            defaultPath: `人員名單_${new Date().toISOString().slice(0, 10)}.xlsx`
+        })
+        if (!filePath) return
+
+        const data = exportParticipants(participants)
+        const success = await window.electronAPI.writeFile(filePath, data)
+
+        if (success) {
+            await window.electronAPI.showMessage({
+                type: 'info',
+                title: '匯出成功',
+                message: `已儲存至 ${filePath}`
+            })
+        }
+    }
+
     const handleAdd = () => {
         if (!newName.trim()) return
         addParticipant({
@@ -111,6 +139,9 @@ export function ParticipantManager({ onUpdate }: ParticipantManagerProps) {
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <button className="btn btn-secondary" onClick={handleImport}>
                             📥 匯入 Excel
+                        </button>
+                        <button className="btn btn-secondary" onClick={handleExport}>
+                            📤 匯出 Excel
                         </button>
                         <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
                             ➕ 新增人員

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
 import { Prize } from '../../types/lottery'
-import { importPrizes } from '../../utils/excel-handler'
+import { exportPrizes, importPrizes } from '../../utils/excel-handler'
 import {
     DndContext,
     closestCenter,
@@ -180,6 +180,34 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
         }
     }
 
+    const handleExport = async () => {
+        if (prizes.length === 0) {
+            await window.electronAPI.showMessage({
+                type: 'warning',
+                title: '無法匯出',
+                message: '尚無獎項可匯出'
+            })
+            return
+        }
+
+        const filePath = await window.electronAPI.saveFile({
+            filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
+            defaultPath: `獎項名單_${new Date().toISOString().slice(0, 10)}.xlsx`
+        })
+        if (!filePath) return
+
+        const data = exportPrizes(prizes)
+        const success = await window.electronAPI.writeFile(filePath, data)
+
+        if (success) {
+            await window.electronAPI.showMessage({
+                type: 'info',
+                title: '匯出成功',
+                message: `已儲存至 ${filePath}`
+            })
+        }
+    }
+
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event
         if (!over || active.id === over.id) return
@@ -252,6 +280,9 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
                         )}
                         <button className="btn btn-secondary" onClick={handleImport}>
                             📥 匯入 Excel
+                        </button>
+                        <button className="btn btn-secondary" onClick={handleExport}>
+                            📤 匯出 Excel
                         </button>
                         <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
                             ➕ 新增獎項
