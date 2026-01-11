@@ -32,5 +32,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     // UI 控制
     toggleFullscreen: () => ipcRenderer.send('toggle-fullscreen'),
-    showMessage: (options: any) => ipcRenderer.invoke('show-message', options)
+    showMessage: (options: any) => ipcRenderer.invoke('show-message', options),
+    quitApp: () => ipcRenderer.invoke('quit-app')
 })

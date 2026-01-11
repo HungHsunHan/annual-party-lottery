@@ -633,7 +633,7 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
 
                 {snapshots.length === 0 ? (
                     <p className="text-center text-muted p-4">
-                        尚無快照。點擊側邊欄的「建立快照」按鈕來建立。
+                        尚無快照。系統會自動備份，無需手動建立快照。
                     </p>
                 ) : (
                     <div className="flex flex-col gap-2">

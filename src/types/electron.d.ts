@@ -26,6 +26,7 @@ export interface ElectronAPI {
     // UI 控制
     toggleFullscreen: () => void
     showMessage: (options: any) => Promise<number>
+    quitApp: () => Promise<void>
 }
 
 declare global {

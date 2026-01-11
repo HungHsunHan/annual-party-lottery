@@ -246,6 +246,17 @@ function setupIpcHandlers() {
         const result = await dialog.showMessageBox(controlWindow!, options)
         return result.response
     })
+
+    // 結束應用程式
+    ipcMain.handle('quit-app', () => {
+        if (displayWindow && !displayWindow.isDestroyed()) {
+            displayWindow.close()
+        }
+        if (controlWindow && !controlWindow.isDestroyed()) {
+            controlWindow.close()
+        }
+        app.quit()
+    })
 }
 
 app.whenReady().then(() => {

@@ -6,7 +6,7 @@ import { ParticipantManager } from './ParticipantManager'
 import { WinnerList } from './WinnerList'
 import { SettingsPanel } from './SettingsPanel'
 import { DrawControl } from './DrawControl'
-import { saveAutoBackup, createSnapshot } from '../../utils/backup-manager'
+import { saveAutoBackup } from '../../utils/backup-manager'
 import './ControlPanel.css'
 
 type Tab = 'dashboard' | 'prizes' | 'participants' | 'winners' | 'settings'
@@ -30,15 +30,17 @@ export function ControlPanel() {
         syncToDisplay()
     }
 
-    const handleCreateSnapshot = async () => {
-        const state = useLotteryStore.getState()
-        const path = await createSnapshot(state.prizes, state.winners, state.participants)
-        if (path) {
-            await window.electronAPI.showMessage({
-                type: 'info',
-                title: '快照已建立',
-                message: `快照已儲存`
-            })
+    const handleExitApp = async () => {
+        const result = await window.electronAPI.showMessage({
+            type: 'question',
+            buttons: ['離開', '取消'],
+            defaultId: 1,
+            title: '離開應用程式',
+            message: '確定要關閉前台與後台並結束應用程式嗎？'
+        })
+
+        if (result === 0) {
+            await window.electronAPI.quitApp()
         }
     }
 
@@ -73,11 +75,8 @@ export function ControlPanel() {
                 </nav>
 
                 <div className="sidebar-footer">
-                    <button className="btn btn-secondary w-full mb-2" onClick={handleCreateSnapshot}>
-                        📸 建立快照
-                    </button>
-                    <button className="btn btn-primary w-full" onClick={syncToDisplay}>
-                        🔄 同步到前台
+                    <button className="btn btn-danger w-full" onClick={handleExitApp}>
+                        🚪 離開應用程式
                     </button>
                 </div>
             </aside>
