@@ -135,22 +135,47 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
     )
 
     const handleImport = async () => {
-        const filePath = await window.electronAPI.selectFile({
-            filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
-        })
-        if (!filePath) return
+        try {
+            const filePath = await window.electronAPI.selectFile({
+                filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
+            })
+            if (!filePath) return
 
-        const base64Data = await window.electronAPI.readFile(filePath)
-        if (!base64Data) return
+            const base64Data = await window.electronAPI.readFile(filePath)
+            if (!base64Data) {
+                await window.electronAPI.showMessage({
+                    type: 'error',
+                    title: '匯入失敗',
+                    message: '無法讀取檔案，請確認檔案是否損壞或格式正確。'
+                })
+                return
+            }
 
-        const imported = importPrizes(base64Data)
-        if (imported.length > 0) {
-            setPrizes(imported)
-            onUpdate()
+            const imported = importPrizes(base64Data)
+            if (imported.length > 0) {
+                setPrizes(imported)
+                onUpdate()
+                await window.electronAPI.showMessage({
+                    type: 'info',
+                    title: '匯入成功',
+                    message: `成功匯入 ${imported.length} 個獎項`
+                })
+            } else {
+                await window.electronAPI.showMessage({
+                    type: 'warning',
+                    title: '匯入結果',
+                    message: '未偵測到有效資料。請確認：\n\n' +
+                        '1. 第一列為標題列（獎項名稱 / prize / name）\n' +
+                        '2. 資料在第一個工作表 (Sheet)\n' +
+                        '3. 獎項名稱欄位不為空白'
+                })
+            }
+        } catch (error) {
+            console.error('Import error:', error)
             await window.electronAPI.showMessage({
-                type: 'info',
-                title: '匯入成功',
-                message: `成功匯入 ${imported.length} 個獎項`
+                type: 'error',
+                title: '匯入錯誤',
+                message: `匯入過程發生錯誤：${error instanceof Error ? error.message : '未知錯誤'}\n\n請確認 Excel 格式正確。`
             })
         }
     }
