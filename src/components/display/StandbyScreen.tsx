@@ -1,34 +1,51 @@
-import { DrawMode, Prize } from '../../types/lottery'
+import { DisplaySettings, DrawMode, Prize } from '../../types/lottery'
 
 interface StandbyScreenProps {
     logo?: string
     prizes: Prize[]
     currentPrize?: Prize | null
     drawMode: DrawMode
+    displaySettings: DisplaySettings
 }
 
-export function StandbyScreen({ logo, prizes, currentPrize, drawMode }: StandbyScreenProps) {
+export function StandbyScreen({
+    logo,
+    prizes,
+    currentPrize,
+    drawMode,
+    displaySettings
+}: StandbyScreenProps) {
+    const { standby } = displaySettings
+    const showLogo = standby.showLogo
+    const showTitle = standby.title.trim().length > 0
+    const showSubtitle = standby.subtitle.trim().length > 0
+    const hasPrize = Boolean(currentPrize)
+    const showPreview = standby.showPrizePreview && hasPrize
+    const showProgress = standby.showPrizeProgress && drawMode === 'one'
+
     return (
         <div className="standby-screen">
-            {logo ? (
-                <img
-                    src={`data:image/png;base64,${logo}`}
-                    alt="Company Logo"
-                    className="standby-logo"
-                />
-            ) : (
-                <div style={{ fontSize: '6rem', marginBottom: '2rem' }}>🎰</div>
+            {showLogo && (
+                logo ? (
+                    <img
+                        src={`data:image/png;base64,${logo}`}
+                        alt="Company Logo"
+                        className="standby-logo"
+                    />
+                ) : (
+                    <div style={{ fontSize: '6rem', marginBottom: '2rem' }}>🎰</div>
+                )
             )}
 
-            <h1 className="standby-title">年終尾牙抽獎</h1>
-            <p className="standby-subtitle">精彩好禮等你來拿！</p>
+            {showTitle && <h1 className="standby-title">{standby.title}</h1>}
+            {showSubtitle && <p className="standby-subtitle">{standby.subtitle}</p>}
 
-            {currentPrize && (
+            {showPreview && currentPrize && (
                 <div className="prize-preview">
                     <div className="prize-preview-item">
                         <span className="prize-preview-icon">🎁</span>
                         <span className="prize-preview-name">{currentPrize.name}</span>
-                        {drawMode === 'one' && (
+                        {showProgress && (
                             <span className="prize-progress">
                                 {currentPrize.drawnCount}/{currentPrize.quantity}
                             </span>

@@ -6,9 +6,16 @@ import {
     DrawMode,
     SystemState,
     CustomAssets,
+    DisplaySettings,
     Statistics,
     LotteryState
 } from '../types/lottery'
+import {
+    createDefaultCustomAssets,
+    createDefaultDisplaySettings,
+    mergeCustomAssets,
+    mergeDisplaySettings
+} from '../constants/display-settings'
 
 interface LotteryActions {
     // 參與者管理
@@ -47,6 +54,13 @@ interface LotteryActions {
 
     // 自訂資源
     setCustomAssets: (assets: Partial<CustomAssets>) => void
+    replaceCustomAssets: (assets: CustomAssets) => void
+    resetCustomAssets: () => void
+
+    // 畫面設定
+    setDisplaySettings: (settings: DisplaySettingsPatch) => void
+    replaceDisplaySettings: (settings: DisplaySettings) => void
+    resetDisplaySettings: () => void
 
     // 狀態同步
     syncState: (state: Partial<LotteryState>) => void
@@ -57,6 +71,12 @@ interface LotteryActions {
 
     // 統計更新
     updateStatistics: () => void
+}
+
+type DisplaySettingsPatch = {
+    standby?: Partial<DisplaySettings['standby']>
+    countdown?: Partial<DisplaySettings['countdown']>
+    winner?: Partial<DisplaySettings['winner']>
 }
 
 const generateId = () => Math.random().toString(36).substring(2, 9)
@@ -71,7 +91,8 @@ const initialState: LotteryState = {
     customDrawCount: 1,
     globalExcludeWinners: true,
     systemState: 'standby',
-    customAssets: { sounds: {} },
+    customAssets: createDefaultCustomAssets(),
+    displaySettings: createDefaultDisplaySettings(),
     statistics: {
         totalParticipants: 0,
         remainingParticipants: 0,
@@ -392,12 +413,27 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
     // 自訂資源
     setCustomAssets: (assets) => {
         set((state) => ({
-            customAssets: {
-                ...state.customAssets,
-                ...assets,
-                sounds: { ...state.customAssets.sounds, ...assets.sounds }
-            }
+            customAssets: mergeCustomAssets(state.customAssets, assets)
         }))
+    },
+    replaceCustomAssets: (assets) => {
+        set({ customAssets: mergeCustomAssets(createDefaultCustomAssets(), assets) })
+    },
+    resetCustomAssets: () => {
+        set({ customAssets: createDefaultCustomAssets() })
+    },
+
+    // 畫面設定
+    setDisplaySettings: (settings) => {
+        set((state) => ({
+            displaySettings: mergeDisplaySettings(state.displaySettings, settings)
+        }))
+    },
+    replaceDisplaySettings: (settings) => {
+        set({ displaySettings: mergeDisplaySettings(createDefaultDisplaySettings(), settings) })
+    },
+    resetDisplaySettings: () => {
+        set({ displaySettings: createDefaultDisplaySettings() })
     },
 
     // 狀態同步
@@ -418,12 +454,17 @@ export const useLotteryStore = create<LotteryState & LotteryActions>((set, get) 
             globalExcludeWinners: state.globalExcludeWinners,
             systemState: state.systemState,
             customAssets: state.customAssets,
+            displaySettings: state.displaySettings,
             statistics: state.statistics
         }
     },
 
     // 重置
-    resetAll: () => set(initialState),
+    resetAll: () => set({
+        ...initialState,
+        customAssets: createDefaultCustomAssets(),
+        displaySettings: createDefaultDisplaySettings()
+    }),
 
     // 統計更新
     updateStatistics: () => {

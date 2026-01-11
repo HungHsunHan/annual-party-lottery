@@ -3,6 +3,7 @@ import { ControlPanel } from './components/control/ControlPanel'
 import { DisplayScreen } from './components/display/DisplayScreen'
 import { useLotteryStore } from './stores/lottery-store'
 import { checkForUnfinishedSession, loadAutoBackup } from './utils/backup-manager'
+import { loadDisplaySettings } from './utils/display-settings-storage'
 
 function App() {
     // 使用 hash router 來區分控制台和投影畫面
@@ -12,6 +13,8 @@ function App() {
     const syncState = useLotteryStore((state) => state.syncState)
 
     useEffect(() => {
+        loadSavedDisplaySettings()
+
         // 監聽狀態更新（投影畫面）
         if (isDisplay) {
             window.electronAPI?.onStateUpdated((data) => {
@@ -30,6 +33,17 @@ function App() {
             checkUnfinishedSession()
         }
     }, [isDisplay, syncState])
+
+    async function loadSavedDisplaySettings() {
+        const saved = await loadDisplaySettings()
+        if (!saved) return
+        const store = useLotteryStore.getState()
+        store.replaceCustomAssets(saved.customAssets)
+        store.replaceDisplaySettings(saved.displaySettings)
+        if (!isDisplay) {
+            window.electronAPI?.syncToDisplay(store.getFullState())
+        }
+    }
 
     async function checkUnfinishedSession() {
         const hasBackup = await checkForUnfinishedSession()

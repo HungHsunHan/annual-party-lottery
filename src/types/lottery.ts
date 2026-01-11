@@ -44,6 +44,33 @@ export interface CustomAssets {
     }
 }
 
+export interface DisplaySettings {
+    standby: {
+        title: string
+        subtitle: string
+        showLogo: boolean
+        showPrizePreview: boolean
+        showPrizeProgress: boolean
+    }
+    countdown: {
+        showLogo: boolean
+        label: string
+        subtitle: string
+        showPrizeName: boolean
+        showPrizeProgress: boolean
+    }
+    winner: {
+        showLogo: boolean
+        badgeText: string
+        showPrizeName: boolean
+        showPrizeProgress: boolean
+        showConfetti: boolean
+        showDepartment: boolean
+        showTrophy: boolean
+        trophyEmoji: string
+    }
+}
+
 // 統計資料
 export interface Statistics {
     totalParticipants: number
@@ -83,6 +110,9 @@ export interface LotteryState {
 
     // 自訂資源
     customAssets: CustomAssets
+
+    // 畫面設定
+    displaySettings: DisplaySettings
 
     // 統計
     statistics: Statistics

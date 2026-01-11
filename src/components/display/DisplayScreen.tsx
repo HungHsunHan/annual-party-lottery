@@ -14,6 +14,7 @@ export function DisplayScreen() {
         prizes,
         currentPrizeId,
         customAssets,
+        displaySettings,
         drawMode
     } = useLotteryStore()
 
@@ -111,6 +112,7 @@ export function DisplayScreen() {
                         prizes={prizes}
                         currentPrize={displayPrize}
                         drawMode={drawMode}
+                        displaySettings={displaySettings}
                     />
                 )}
 
@@ -119,6 +121,8 @@ export function DisplayScreen() {
                         seconds={revealSeconds}
                         prize={currentPrize}
                         drawMode={drawMode}
+                        logo={customAssets.logo}
+                        settings={displaySettings.countdown}
                     />
                 )}
 
@@ -128,12 +132,16 @@ export function DisplayScreen() {
                             participants={currentDraw.revealParticipants}
                             prize={currentPrize}
                             drawMode={drawMode}
+                            logo={customAssets.logo}
+                            settings={displaySettings.winner}
                         />
                     ) : (
                         <RevealCountdown
                             seconds={revealSeconds}
                             prize={currentPrize}
                             drawMode={drawMode}
+                            logo={customAssets.logo}
+                            settings={displaySettings.countdown}
                         />
                     )
                 )}

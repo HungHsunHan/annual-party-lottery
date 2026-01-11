@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
-import { DrawMode, Participant, Prize } from '../../types/lottery'
+import { DisplaySettings, DrawMode, Participant, Prize } from '../../types/lottery'
 
 interface WinnerRevealProps {
     participants: Participant[]
     prize: Prize
     drawMode: DrawMode
+    logo?: string
+    settings: DisplaySettings['winner']
 }
 
 // 紙花顏色
@@ -13,7 +15,13 @@ const CONFETTI_COLORS = [
     '#5f27cd', '#00d2d3', '#ff6b81', '#ffeaa7', '#74b9ff'
 ]
 
-export function WinnerReveal({ participants, prize, drawMode }: WinnerRevealProps) {
+export function WinnerReveal({
+    participants,
+    prize,
+    drawMode,
+    logo,
+    settings
+}: WinnerRevealProps) {
     const [confettiPieces, setConfettiPieces] = useState<Array<{
         id: number
         left: string
@@ -23,6 +31,11 @@ export function WinnerReveal({ participants, prize, drawMode }: WinnerRevealProp
     }>>([])
 
     useEffect(() => {
+        if (!settings.showConfetti) {
+            setConfettiPieces([])
+            return
+        }
+
         // 生成紙花
         const pieces = Array.from({ length: 50 }, (_, i) => ({
             id: i,
@@ -32,7 +45,7 @@ export function WinnerReveal({ participants, prize, drawMode }: WinnerRevealProp
             duration: `${2 + Math.random() * 2}s`
         }))
         setConfettiPieces(pieces)
-    }, [])
+    }, [settings.showConfetti])
 
     const multiple = participants.length > 1
     const densityClass = participants.length >= 16
@@ -40,54 +53,82 @@ export function WinnerReveal({ participants, prize, drawMode }: WinnerRevealProp
         : participants.length >= 9
             ? 'compact'
             : ''
+    const showPrizeName = settings.showPrizeName
+    const showProgress = drawMode === 'one' && settings.showPrizeProgress
+    const showPrizeBlock = showPrizeName || showProgress
+    const showLogo = settings.showLogo && logo
+    const showBadge = settings.badgeText.trim().length > 0
+    const showTrophy = settings.showTrophy && settings.trophyEmoji.trim().length > 0
+    const showHeader = showLogo || showPrizeBlock || showBadge
 
     return (
         <div className="winner-reveal">
             {/* 紙花效果 */}
-            <div className="winner-confetti">
-                {confettiPieces.map(piece => (
-                    <div
-                        key={piece.id}
-                        className="confetti-piece"
-                        style={{
-                            left: piece.left,
-                            backgroundColor: piece.color,
-                            animationDelay: piece.delay,
-                            animationDuration: piece.duration
-                        }}
-                    />
-                ))}
-            </div>
-
-            <div className="winner-header">
-                <div className="winner-prize-name">
-                    🎁 {prize.name}
-                    {drawMode === 'one' && (
-                        <span className="prize-progress">
-                            {prize.drawnCount}/{prize.quantity}
-                        </span>
-                    )}
+            {settings.showConfetti && (
+                <div className="winner-confetti">
+                    {confettiPieces.map(piece => (
+                        <div
+                            key={piece.id}
+                            className="confetti-piece"
+                            style={{
+                                left: piece.left,
+                                backgroundColor: piece.color,
+                                animationDelay: piece.delay,
+                                animationDuration: piece.duration
+                            }}
+                        />
+                    ))}
                 </div>
-                <div className="winner-badge">🎉 恭喜中獎 🎉</div>
-            </div>
+            )}
+
+            {showHeader && (
+                <div className="winner-header">
+                    {showLogo && (
+                        <img
+                            src={`data:image/png;base64,${logo}`}
+                            alt="Company Logo"
+                            className="display-logo winner-logo"
+                        />
+                    )}
+                    {showPrizeBlock && (
+                        <div className="winner-prize-name">
+                            {showPrizeName && (
+                                <>
+                                    🎁 {prize.name}
+                                </>
+                            )}
+                            {showProgress && (
+                                <span className="prize-progress">
+                                    {prize.drawnCount}/{prize.quantity}
+                                </span>
+                            )}
+                        </div>
+                    )}
+                    {showBadge && <div className="winner-badge">{settings.badgeText}</div>}
+                </div>
+            )}
 
             {multiple ? (
                 <div className={`winner-grid${densityClass ? ` ${densityClass}` : ''}`}>
                     {participants.map(participant => (
                         <div key={participant.id} className="winner-card-sm">
                             <div className="winner-name-sm">{participant.name}</div>
-                            <div className="winner-dept-sm">{participant.department}</div>
+                            {settings.showDepartment && (
+                                <div className="winner-dept-sm">{participant.department}</div>
+                            )}
                         </div>
                     ))}
                 </div>
             ) : (
                 <div className="winner-card">
                     <div className="winner-name">{participants[0]?.name}</div>
-                    <div className="winner-dept">{participants[0]?.department}</div>
+                    {settings.showDepartment && (
+                        <div className="winner-dept">{participants[0]?.department}</div>
+                    )}
                 </div>
             )}
 
-            <div className="winner-emoji">🏆</div>
+            {showTrophy && <div className="winner-emoji">{settings.trophyEmoji}</div>}
         </div>
     )
 }

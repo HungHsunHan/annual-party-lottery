@@ -106,6 +106,21 @@
     filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.5));
 }
 
+.display-logo {
+    max-width: 280px;
+    max-height: 140px;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.45));
+}
+
+.countdown-logo {
+    margin-bottom: 0.5rem;
+}
+
+.winner-logo {
+    margin-bottom: 0.75rem;
+}
+
 .standby-title {
     font-size: 4rem;
     font-weight: 800;
