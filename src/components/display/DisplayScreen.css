@@ -626,26 +626,32 @@
     gap: 1.2rem;
     margin-top: 1rem;
     --winner-card-min: 260px;
+    --winner-card-max: 360px;
     --winner-name-size: 2.2rem;
     --winner-dept-size: 1.15rem;
     --winner-card-padding-x: 2.25rem;
     --winner-card-padding-y: 1.5rem;
+    --winner-card-width: clamp(var(--winner-card-min), 22vw, var(--winner-card-max));
 }
 
 .winner-grid.compact {
     --winner-card-min: 220px;
+    --winner-card-max: 300px;
     --winner-name-size: 1.8rem;
     --winner-dept-size: 1rem;
     --winner-card-padding-x: 1.8rem;
     --winner-card-padding-y: 1.2rem;
+    --winner-card-width: clamp(var(--winner-card-min), 20vw, var(--winner-card-max));
 }
 
 .winner-grid.dense {
     --winner-card-min: 180px;
+    --winner-card-max: 240px;
     --winner-name-size: 1.5rem;
     --winner-dept-size: 0.95rem;
     --winner-card-padding-x: 1.4rem;
     --winner-card-padding-y: 1rem;
+    --winner-card-width: clamp(var(--winner-card-min), 18vw, var(--winner-card-max));
 }
 
 .winner-card-sm {
@@ -655,8 +661,8 @@
     padding: var(--winner-card-padding-y) var(--winner-card-padding-x);
     border: 2px solid rgba(34, 197, 94, 0.35);
     box-shadow: 0 0 40px rgba(34, 197, 94, 0.2);
-    min-width: var(--winner-card-min);
-    flex: 1 1 var(--winner-card-min);
+    width: min(100%, var(--winner-card-width));
+    flex: 0 1 var(--winner-card-width);
     display: flex;
     align-items: center;
     justify-content: space-between;
