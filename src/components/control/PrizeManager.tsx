@@ -82,11 +82,11 @@ function SortablePrizeItem({
 
             {/* 排除設定 */}
             <button
-                className={`btn btn-sm ${prize.excludeWinners ? 'btn-primary' : 'btn-secondary'}`}
+                className={`btn btn-sm prize-exclude-btn ${prize.excludeWinners ? 'is-excluding' : 'is-including'}`}
                 onClick={() => onToggleExclude(prize.id)}
-                title={prize.excludeWinners ? '排除已中獎者' : '含已中獎者'}
+                title={prize.excludeWinners ? '排除已中獎者' : 'Everyone'}
             >
-                {prize.excludeWinners ? '🚫' : '✅'}
+                {prize.excludeWinners ? '排除已中獎' : 'Everyone'}
             </button>
 
             {/* 狀態標籤 */}
@@ -291,7 +291,7 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
                 </div>
 
                 <p className="text-muted mb-4" style={{ fontSize: '0.875rem' }}>
-                    💡 拖拉獎項可調整抽獎順序。點擊 🚫/✅ 切換是否排除已中獎者。
+                    💡 拖拉獎項可調整抽獎順序。點擊「排除已中獎 / Everyone」切換是否排除已中獎者。
                 </p>
 
                 <DndContext

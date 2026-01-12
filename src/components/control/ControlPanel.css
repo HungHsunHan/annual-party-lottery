@@ -257,6 +257,24 @@
     font-weight: 600;
 }
 
+.prize-exclude-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    box-shadow: none;
+}
+
+.prize-exclude-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.prize-exclude-btn.is-excluding {
+    color: var(--danger);
+}
+
+.prize-exclude-btn.is-including {
+    color: var(--success);
+}
+
 /* 人員列表 */
 .participant-list {
     max-height: 400px;
