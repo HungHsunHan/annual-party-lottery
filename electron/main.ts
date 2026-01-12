@@ -7,6 +7,39 @@ let displayWindow: BrowserWindow | null = null
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 
+let cachedBackupDir: string | null = null
+
+const ensureWritableDir = (dir: string): boolean => {
+    try {
+        fs.mkdirSync(dir, { recursive: true })
+        fs.accessSync(dir, fs.constants.W_OK)
+        return true
+    } catch (error) {
+        console.warn('Backup dir not writable:', dir, error)
+        return false
+    }
+}
+
+const seedBackupDir = (targetDir: string) => {
+    if (!app.isPackaged) return
+    const seedDir = path.join(process.resourcesPath, 'backup')
+    if (!fs.existsSync(seedDir)) return
+
+    if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true })
+    }
+
+    const entries = fs.readdirSync(seedDir, { withFileTypes: true })
+    for (const entry of entries) {
+        if (entry.isDirectory()) continue
+        const sourcePath = path.join(seedDir, entry.name)
+        const targetPath = path.join(targetDir, entry.name)
+        if (!fs.existsSync(targetPath)) {
+            fs.copyFileSync(sourcePath, targetPath)
+        }
+    }
+}
+
 function createControlWindow() {
     controlWindow = new BrowserWindow({
         width: 1400,
@@ -67,14 +100,34 @@ function createDisplayWindow() {
     })
 }
 
-// 獲取備份資料夾（開發環境：專案根目錄，打包後：exe 同層）
+// 獲取備份資料夾（優先 exe 同層，無法寫入時退回 userData）
 function getBackupDir(): string {
-    const baseDir = app.isPackaged ? path.dirname(process.execPath) : process.cwd()
-    const backupDir = path.join(baseDir, 'backup')
-    if (!fs.existsSync(backupDir)) {
-        fs.mkdirSync(backupDir, { recursive: true })
+    if (cachedBackupDir) return cachedBackupDir
+
+    const candidates: string[] = []
+    if (!app.isPackaged) {
+        candidates.push(path.join(process.cwd(), 'backup'))
+    } else {
+        if (process.env.PORTABLE_EXECUTABLE_DIR) {
+            candidates.push(path.join(process.env.PORTABLE_EXECUTABLE_DIR, 'backup'))
+        }
+        candidates.push(path.join(path.dirname(process.execPath), 'backup'))
+        candidates.push(path.join(app.getPath('userData'), 'backup'))
     }
-    return backupDir
+
+    for (const dir of candidates) {
+        if (ensureWritableDir(dir)) {
+            seedBackupDir(dir)
+            cachedBackupDir = dir
+            return dir
+        }
+    }
+
+    const fallbackDir = path.join(app.getPath('userData'), 'backup')
+    fs.mkdirSync(fallbackDir, { recursive: true })
+    seedBackupDir(fallbackDir)
+    cachedBackupDir = fallbackDir
+    return fallbackDir
 }
 
 // IPC 處理器

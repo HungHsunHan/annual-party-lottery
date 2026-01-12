@@ -159,6 +159,9 @@ npm run electron:build
 
 ## 資料儲存位置
 
-備份檔案儲存在應用程式同層的 `backup` 資料夾：
+備份檔案與顯示設定（含 Logo/背景）都會存放在 `backup` 資料夾：
 - 開發環境：專案根目錄下的 `backup/`
-- 打包後：`exe` 同層的 `backup/`
+- 打包後（可攜版或有寫入權限時）：`exe` 同層的 `backup/`
+- 打包後（安裝版無寫入權限時）：`%AppData%/lottery-system/backup/`（Windows）
+
+> 建議使用 portable 版並放在桌面或 D 槽，使用者可直接備份或替換 `backup` 資料夾內容。
