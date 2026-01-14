@@ -27,8 +27,9 @@ export function DisplayScreen() {
     const displayPrize = activePrize || nextPrize || (systemState !== 'standby' ? currentPrize : null)
     const [revealSeconds, setRevealSeconds] = useState(REVEAL_COUNTDOWN_SECONDS)
     const [isRevealReady, setIsRevealReady] = useState(false)
-    const revealParticipantIds = currentDraw?.revealParticipants.map(participant => participant.id).join(',') ?? ''
-    const hasRevealParticipants = (currentDraw?.revealParticipants.length ?? 0) > 0
+    const revealParticipants = currentDraw?.revealParticipants ?? []
+    const revealParticipantIds = revealParticipants.map(participant => participant.id).join(',')
+    const hasRevealParticipants = revealParticipants.length > 0
 
     useEffect(() => {
         const shouldCountdown = systemState === 'drawing' || (systemState === 'revealing' && hasRevealParticipants)
@@ -131,7 +132,7 @@ export function DisplayScreen() {
                 {systemState === 'revealing' && hasRevealParticipants && currentPrize && (
                     isRevealReady ? (
                         <WinnerReveal
-                            participants={currentDraw.revealParticipants}
+                            participants={revealParticipants}
                             prize={currentPrize}
                             drawMode={drawMode}
                             logo={customAssets.logo}

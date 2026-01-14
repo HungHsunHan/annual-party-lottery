@@ -25,16 +25,12 @@ export function StandbyScreen({
 
     return (
         <div className="standby-screen">
-            {showLogo && (
-                logo ? (
-                    <img
-                        src={`data:image/png;base64,${logo}`}
-                        alt="Company Logo"
-                        className="standby-logo"
-                    />
-                ) : (
-                    <div style={{ fontSize: '6rem', marginBottom: '2rem' }}>🎰</div>
-                )
+            {showLogo && logo && (
+                <img
+                    src={`data:image/png;base64,${logo}`}
+                    alt="Company Logo"
+                    className="standby-logo"
+                />
             )}
 
             {showTitle && <h1 className="standby-title">{standby.title}</h1>}
