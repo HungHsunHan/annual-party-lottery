@@ -108,25 +108,27 @@ export function WinnerReveal({
                 </div>
             )}
 
-            {multiple ? (
-                <div className={`winner-grid${densityClass ? ` ${densityClass}` : ''}`}>
-                    {participants.map(participant => (
-                        <div key={participant.id} className="winner-card-sm">
-                            <div className="winner-name-sm">{participant.name}</div>
-                            {settings.showDepartment && (
-                                <div className="winner-dept-sm">{participant.department}</div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="winner-card">
-                    <div className="winner-name">{participants[0]?.name}</div>
-                    {settings.showDepartment && (
-                        <div className="winner-dept">{participants[0]?.department}</div>
-                    )}
-                </div>
-            )}
+            <div className="winner-list-frame">
+                {multiple ? (
+                    <div className={`winner-grid${densityClass ? ` ${densityClass}` : ''}`}>
+                        {participants.map(participant => (
+                            <div key={participant.id} className="winner-card-sm">
+                                <div className="winner-name-sm">{participant.name}</div>
+                                {settings.showDepartment && (
+                                    <div className="winner-dept-sm">{participant.department}</div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="winner-card">
+                        <div className="winner-name">{participants[0]?.name}</div>
+                        {settings.showDepartment && (
+                            <div className="winner-dept">{participants[0]?.department}</div>
+                        )}
+                    </div>
+                )}
+            </div>
 
             {showTrophy && <div className="winner-emoji">{settings.trophyEmoji}</div>}
         </div>

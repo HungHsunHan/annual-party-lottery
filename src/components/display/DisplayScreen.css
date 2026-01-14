@@ -607,6 +607,20 @@
     margin-bottom: 2rem;
 }
 
+.winner-list-frame {
+    width: min(88vw, 1688px);
+    max-width: 100%;
+    max-height: min(88vh, 953px);
+    margin: 0 auto;
+    padding: clamp(0.5rem, 1.4vw, 1.5rem);
+    border-radius: clamp(24px, 3vw, 40px);
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .winner-card {
     background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(99, 102, 241, 0.3));
     backdrop-filter: blur(20px);
@@ -625,33 +639,36 @@
     justify-content: center;
     gap: 1.2rem;
     margin-top: 1rem;
-    --winner-card-min: 260px;
-    --winner-card-max: 360px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    --winner-card-min: 220px;
+    --winner-card-max: 320px;
     --winner-name-size: 2.2rem;
     --winner-dept-size: 1.15rem;
     --winner-card-padding-x: 2.25rem;
     --winner-card-padding-y: 1.5rem;
-    --winner-card-width: clamp(var(--winner-card-min), 22vw, var(--winner-card-max));
+    --winner-card-width: clamp(var(--winner-card-min), 18vw, var(--winner-card-max));
 }
 
 .winner-grid.compact {
-    --winner-card-min: 220px;
-    --winner-card-max: 300px;
+    --winner-card-min: 200px;
+    --winner-card-max: 280px;
     --winner-name-size: 1.8rem;
     --winner-dept-size: 1rem;
     --winner-card-padding-x: 1.8rem;
     --winner-card-padding-y: 1.2rem;
-    --winner-card-width: clamp(var(--winner-card-min), 20vw, var(--winner-card-max));
+    --winner-card-width: clamp(var(--winner-card-min), 16vw, var(--winner-card-max));
 }
 
 .winner-grid.dense {
-    --winner-card-min: 180px;
-    --winner-card-max: 240px;
+    --winner-card-min: 170px;
+    --winner-card-max: 230px;
     --winner-name-size: 1.5rem;
     --winner-dept-size: 0.95rem;
     --winner-card-padding-x: 1.4rem;
     --winner-card-padding-y: 1rem;
-    --winner-card-width: clamp(var(--winner-card-min), 18vw, var(--winner-card-max));
+    --winner-card-width: clamp(var(--winner-card-min), 14vw, var(--winner-card-max));
 }
 
 .winner-card-sm {
