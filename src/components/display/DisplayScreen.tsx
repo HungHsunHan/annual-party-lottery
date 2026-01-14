@@ -5,6 +5,7 @@ import { WinnerReveal } from './WinnerReveal'
 import { RevealCountdown } from './RevealCountdown'
 import { soundManager } from '../../utils/sound-manager'
 import { REVEAL_COUNTDOWN_SECONDS, REVEAL_COUNTDOWN_MS } from '../../constants/lottery'
+import { DEFAULT_BACKGROUND_URL } from '../../constants/default-assets'
 import './DisplayScreen.css'
 
 export function DisplayScreen() {
@@ -90,13 +91,14 @@ export function DisplayScreen() {
     }, [systemState, isRevealReady])
 
     // 背景樣式
-    const backgroundStyle = customAssets.background
-        ? {
-            backgroundImage: `url(data:image/png;base64,${customAssets.background})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-        }
-        : {}
+    const backgroundUrl = customAssets.background
+        ? `data:image/png;base64,${customAssets.background}`
+        : DEFAULT_BACKGROUND_URL
+    const backgroundStyle = {
+        backgroundImage: `url(${backgroundUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+    }
 
     return (
         <div className="display-screen" style={backgroundStyle}>

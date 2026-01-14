@@ -2,6 +2,7 @@ import { useLotteryStore } from '../../stores/lottery-store'
 import { listSnapshots, loadSnapshot, deleteSnapshot } from '../../utils/backup-manager'
 import { clearDisplaySettings, saveDisplaySettings } from '../../utils/display-settings-storage'
 import { DisplaySettings } from '../../types/lottery'
+import { DEFAULT_BACKGROUND_URL } from '../../constants/default-assets'
 import { useState, useEffect } from 'react'
 
 interface SettingsPanelProps {
@@ -20,6 +21,10 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
         setGlobalExcludeWinners
     } = useLotteryStore()
     const [snapshots, setSnapshots] = useState<string[]>([])
+    const backgroundPreviewUrl = customAssets.background
+        ? `data:image/png;base64,${customAssets.background}`
+        : DEFAULT_BACKGROUND_URL
+    const isUsingDefaultBackground = !customAssets.background
 
     useEffect(() => {
         loadSnapshots()
@@ -358,7 +363,7 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                                 onChange={(event) => handleWinnerSettingChange({
                                     badgeText: event.target.value
                                 })}
-                                placeholder="🎉 恭喜中獎 🎉"
+                                placeholder="🎉 恭喜中奖 🎉"
                             />
                         </label>
 
@@ -370,7 +375,7 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                                 onChange={(event) => handleWinnerSettingChange({
                                     trophyEmoji: event.target.value
                                 })}
-                                placeholder="🏆"
+                                placeholder="🧧"
                             />
                         </label>
 
@@ -505,34 +510,36 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                         </div>
 
                         <div className="asset-upload" onClick={handleUploadBackground}>
-                            {customAssets.background ? (
-                                <>
-                                    <img
-                                        src={`data:image/png;base64,${customAssets.background}`}
-                                        alt="Background"
-                                        className="asset-preview"
-                                    />
-                                    <p className="text-sm text-muted">點擊更換背景</p>
-                                    <div className="asset-actions">
-                                        <button
-                                            type="button"
-                                            className="btn btn-sm btn-danger asset-remove-btn"
-                                            onClick={(event) => {
-                                                event.stopPropagation()
-                                                handleRemoveBackground()
-                                            }}
-                                        >
-                                            移除
-                                        </button>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🖼️</div>
-                                    <p>上傳背景圖片</p>
-                                    <p className="text-sm text-muted">建議尺寸：1920x1080</p>
-                                </>
-                            )}
+                            <img
+                                src={backgroundPreviewUrl}
+                                alt="Background"
+                                className="asset-preview"
+                            />
+                            <p className="text-sm text-muted">
+                                {isUsingDefaultBackground ? '目前使用預設背景' : '點擊更換背景'}
+                            </p>
+                            <div className="asset-actions" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-secondary"
+                                    onClick={(event) => {
+                                        event.stopPropagation()
+                                        handleRemoveBackground()
+                                    }}
+                                >
+                                    使用預設
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-primary"
+                                    onClick={(event) => {
+                                        event.stopPropagation()
+                                        handleUploadBackground()
+                                    }}
+                                >
+                                    上傳背景圖片
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

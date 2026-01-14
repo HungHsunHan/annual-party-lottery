@@ -6,28 +6,28 @@ export const createDefaultCustomAssets = (): CustomAssets => ({
 
 export const createDefaultDisplaySettings = (): DisplaySettings => ({
     standby: {
-        title: '年終尾牙抽獎',
-        subtitle: '精彩好禮等你來拿！',
+        title: '年终尾牙抽奖',
+        subtitle: '',
         showLogo: true,
         showPrizePreview: true,
         showPrizeProgress: true
     },
     countdown: {
         showLogo: false,
-        label: 'REVEAL IN',
-        subtitle: 'Prepare for the reveal',
+        label: '',
+        subtitle: '',
         showPrizeName: true,
         showPrizeProgress: true
     },
     winner: {
         showLogo: false,
-        badgeText: '🎉 恭喜中獎 🎉',
+        badgeText: '🎉 恭喜中奖 🎉',
         showPrizeName: true,
         showPrizeProgress: true,
         showConfetti: true,
         showDepartment: true,
         showTrophy: true,
-        trophyEmoji: '🏆'
+        trophyEmoji: '🧧'
     }
 })
 
