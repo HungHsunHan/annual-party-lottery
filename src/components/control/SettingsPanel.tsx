@@ -314,6 +314,32 @@ export function SettingsPanel({ onUpdate }: SettingsPanelProps) {
                             />
                         </label>
 
+                        <label className="flex flex-col gap-2">
+                            <span>閃名字總時長（秒）</span>
+                            <input
+                                type="number"
+                                min={0}
+                                step={0.1}
+                                value={displaySettings.countdown.flashDurationSeconds}
+                                onChange={(event) => handleCountdownSettingChange({
+                                    flashDurationSeconds: parseFloat(event.target.value) || 0
+                                })}
+                            />
+                        </label>
+
+                        <label className="flex flex-col gap-2">
+                            <span>每個名字顯示時間（毫秒）</span>
+                            <input
+                                type="number"
+                                min={50}
+                                step={50}
+                                value={displaySettings.countdown.flashNameDurationMs}
+                                onChange={(event) => handleCountdownSettingChange({
+                                    flashNameDurationMs: parseInt(event.target.value, 10) || 0
+                                })}
+                            />
+                        </label>
+
                         <label className="flex items-center gap-2">
                             <input
                                 type="checkbox"

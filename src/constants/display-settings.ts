@@ -17,7 +17,9 @@ export const createDefaultDisplaySettings = (): DisplaySettings => ({
         label: '',
         subtitle: '',
         showPrizeName: true,
-        showPrizeProgress: true
+        showPrizeProgress: true,
+        flashDurationSeconds: 3,
+        flashNameDurationMs: 500
     },
     winner: {
         showLogo: false,

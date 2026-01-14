@@ -3,6 +3,7 @@ import { useLotteryStore } from '../../stores/lottery-store'
 import { StandbyScreen } from './StandbyScreen'
 import { WinnerReveal } from './WinnerReveal'
 import { RevealCountdown } from './RevealCountdown'
+import { FlashNameSequence } from './FlashNameSequence'
 import { soundManager } from '../../utils/sound-manager'
 import { REVEAL_COUNTDOWN_SECONDS, REVEAL_COUNTDOWN_MS } from '../../constants/lottery'
 import { DEFAULT_BACKGROUND_URL } from '../../constants/default-assets'
@@ -14,6 +15,7 @@ export function DisplayScreen() {
         currentDraw,
         prizes,
         currentPrizeId,
+        participants,
         customAssets,
         displaySettings,
         drawMode
@@ -27,35 +29,78 @@ export function DisplayScreen() {
     const displayPrize = activePrize || nextPrize || (systemState !== 'standby' ? currentPrize : null)
     const [revealSeconds, setRevealSeconds] = useState(REVEAL_COUNTDOWN_SECONDS)
     const [isRevealReady, setIsRevealReady] = useState(false)
+    const [isFlashing, setIsFlashing] = useState(false)
     const revealParticipants = currentDraw?.revealParticipants ?? []
     const revealParticipantIds = revealParticipants.map(participant => participant.id).join(',')
     const hasRevealParticipants = revealParticipants.length > 0
+    const flashDurationSeconds = Math.max(0, displaySettings.countdown.flashDurationSeconds ?? 0)
+    const flashNameDurationMs = Math.max(0, displaySettings.countdown.flashNameDurationMs ?? 0)
+    const flashDurationMs = flashDurationSeconds * 1000
+    const flashEligibleCount = currentPrize
+        ? (currentPrize.excludeWinners
+            ? participants.filter(participant => !participant.hasWon).length
+            : participants.length)
+        : 0
+    const shouldFlash = flashDurationMs > 0 && flashNameDurationMs > 0 && flashEligibleCount > 0
 
     useEffect(() => {
-        const shouldCountdown = systemState === 'drawing' || (systemState === 'revealing' && hasRevealParticipants)
-        if (!shouldCountdown) {
+        const shouldRunSequence = systemState === 'drawing' || (systemState === 'revealing' && hasRevealParticipants)
+        if (!shouldRunSequence) {
             setIsRevealReady(false)
             setRevealSeconds(REVEAL_COUNTDOWN_SECONDS)
+            setIsFlashing(false)
             return
         }
 
         setIsRevealReady(false)
         setRevealSeconds(REVEAL_COUNTDOWN_SECONDS)
-        let secondsRemaining = REVEAL_COUNTDOWN_SECONDS
-        const interval = setInterval(() => {
-            secondsRemaining = Math.max(1, secondsRemaining - 1)
+        let countdownInterval: ReturnType<typeof setInterval> | null = null
+        let countdownTimeout: ReturnType<typeof setTimeout> | null = null
+        let flashTimeout: ReturnType<typeof setTimeout> | null = null
+
+        const startCountdown = () => {
+            setIsFlashing(false)
+            let secondsRemaining = REVEAL_COUNTDOWN_SECONDS
             setRevealSeconds(secondsRemaining)
-        }, 1000)
-        const timeout = setTimeout(() => {
-            setIsRevealReady(true)
-            clearInterval(interval)
-        }, REVEAL_COUNTDOWN_MS)
+            countdownInterval = setInterval(() => {
+                secondsRemaining = Math.max(1, secondsRemaining - 1)
+                setRevealSeconds(secondsRemaining)
+            }, 1000)
+            countdownTimeout = setTimeout(() => {
+                setIsRevealReady(true)
+                if (countdownInterval) {
+                    clearInterval(countdownInterval)
+                }
+            }, REVEAL_COUNTDOWN_MS)
+        }
+
+        if (shouldFlash) {
+            setIsFlashing(true)
+            flashTimeout = setTimeout(startCountdown, flashDurationMs)
+        } else {
+            setIsFlashing(false)
+            startCountdown()
+        }
 
         return () => {
-            clearInterval(interval)
-            clearTimeout(timeout)
+            if (countdownInterval) {
+                clearInterval(countdownInterval)
+            }
+            if (countdownTimeout) {
+                clearTimeout(countdownTimeout)
+            }
+            if (flashTimeout) {
+                clearTimeout(flashTimeout)
+            }
         }
-    }, [systemState, currentDraw?.prizeId, revealParticipantIds, hasRevealParticipants])
+    }, [
+        systemState,
+        currentDraw?.prizeId,
+        revealParticipantIds,
+        hasRevealParticipants,
+        shouldFlash,
+        flashDurationMs
+    ])
 
     // 載入自訂音效
     useEffect(() => {
@@ -120,13 +165,23 @@ export function DisplayScreen() {
                 )}
 
                 {systemState === 'drawing' && currentPrize && (
-                    <RevealCountdown
-                        seconds={revealSeconds}
-                        prize={currentPrize}
-                        drawMode={drawMode}
-                        logo={customAssets.logo}
-                        settings={displaySettings.countdown}
-                    />
+                    isFlashing ? (
+                        <FlashNameSequence
+                            prize={currentPrize}
+                            drawMode={drawMode}
+                            logo={customAssets.logo}
+                            settings={displaySettings.countdown}
+                            nameDurationMs={flashNameDurationMs}
+                        />
+                    ) : (
+                        <RevealCountdown
+                            seconds={revealSeconds}
+                            prize={currentPrize}
+                            drawMode={drawMode}
+                            logo={customAssets.logo}
+                            settings={displaySettings.countdown}
+                        />
+                    )
                 )}
 
                 {systemState === 'revealing' && hasRevealParticipants && currentPrize && (
@@ -139,13 +194,23 @@ export function DisplayScreen() {
                             settings={displaySettings.winner}
                         />
                     ) : (
-                        <RevealCountdown
-                            seconds={revealSeconds}
-                            prize={currentPrize}
-                            drawMode={drawMode}
-                            logo={customAssets.logo}
-                            settings={displaySettings.countdown}
-                        />
+                        isFlashing ? (
+                            <FlashNameSequence
+                                prize={currentPrize}
+                                drawMode={drawMode}
+                                logo={customAssets.logo}
+                                settings={displaySettings.countdown}
+                                nameDurationMs={flashNameDurationMs}
+                            />
+                        ) : (
+                            <RevealCountdown
+                                seconds={revealSeconds}
+                                prize={currentPrize}
+                                drawMode={drawMode}
+                                logo={customAssets.logo}
+                                settings={displaySettings.countdown}
+                            />
+                        )
                     )
                 )}
             </div>

@@ -58,6 +58,8 @@ export interface DisplaySettings {
         subtitle: string
         showPrizeName: boolean
         showPrizeProgress: boolean
+        flashDurationSeconds: number
+        flashNameDurationMs: number
     }
     winner: {
         showLogo: boolean

@@ -22,7 +22,8 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         confirmWinners,
         rejectAndRedraw,
         finishCurrentPrizeDraw,
-        setSystemState
+        setSystemState,
+        displaySettings
     } = useLotteryStore()
 
     const currentPrize = currentPrizeId ? prizes.find(p => p.id === currentPrizeId) : null
@@ -34,22 +35,8 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
     const pendingParticipants = currentDraw?.pendingParticipants ?? []
     const revealSignature = currentDraw?.revealParticipants.map(participant => participant.id).join(',') ?? ''
     const isRevealPhase = systemState === 'revealing' || systemState === 'confirming'
-
-    useEffect(() => {
-        if (!isRevealPhase || !revealSignature) {
-            setIsRevealCountdownDone(false)
-            return
-        }
-
-        setIsRevealCountdownDone(false)
-        const timeout = setTimeout(() => {
-            setIsRevealCountdownDone(true)
-        }, REVEAL_COUNTDOWN_MS)
-
-        return () => {
-            clearTimeout(timeout)
-        }
-    }, [isRevealPhase, revealSignature])
+    const flashDurationMs = Math.max(0, displaySettings.countdown.flashDurationSeconds ?? 0) * 1000
+    const flashNameDurationMs = Math.max(0, displaySettings.countdown.flashNameDurationMs ?? 0)
 
     // 取得可抽獎的人員池
     const getEligibleParticipants = (): Participant[] => {
@@ -60,6 +47,28 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         }
         return participants
     }
+
+    const eligibleParticipants = getEligibleParticipants()
+    const flashDelayMs = flashDurationMs > 0 && flashNameDurationMs > 0 && eligibleParticipants.length > 0
+        ? flashDurationMs
+        : 0
+    const revealDelayMs = REVEAL_COUNTDOWN_MS + flashDelayMs
+
+    useEffect(() => {
+        if (!isRevealPhase || !revealSignature) {
+            setIsRevealCountdownDone(false)
+            return
+        }
+
+        setIsRevealCountdownDone(false)
+        const timeout = setTimeout(() => {
+            setIsRevealCountdownDone(true)
+        }, revealDelayMs)
+
+        return () => {
+            clearTimeout(timeout)
+        }
+    }, [isRevealPhase, revealSignature, revealDelayMs])
 
     // 執行隨機抽獎
     const pickRandomParticipants = (count: number, excludeIds: Set<string> = new Set()) => {
