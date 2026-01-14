@@ -487,16 +487,44 @@
         0 0 50px rgba(99, 102, 241, 0.35),
         inset 0 0 30px rgba(255, 255, 255, 0.08);
     min-width: min(80vw, 720px);
+    display: flex;
+    justify-content: center;
+}
+
+.flash-name-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    width: min(70vw, 640px);
+    animation: flashPop 0.35s ease;
 }
 
 .flash-name {
     font-size: clamp(3rem, 6vw, 5rem);
     font-weight: 800;
     letter-spacing: 0.02em;
+    line-height: 1.1;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-shadow:
         0 0 35px rgba(255, 255, 255, 0.55),
         0 0 70px rgba(99, 102, 241, 0.35);
-    animation: flashPop 0.35s ease;
+}
+
+.flash-dept {
+    font-size: clamp(1.5rem, 2.6vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.15;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 100%;
+    min-height: 1.15em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
 }
 
 @keyframes flashPop {
@@ -737,10 +765,11 @@
     width: min(100%, var(--winner-card-width));
     flex: 0 1 var(--winner-card-width);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    text-align: left;
+    justify-content: center;
+    gap: 0.4rem;
+    text-align: center;
 }
 
 .winner-name-sm {
@@ -751,14 +780,22 @@
     text-shadow:
         0 0 20px rgba(255, 255, 255, 0.5),
         0 0 40px rgba(34, 197, 94, 0.4);
-    flex: 1;
+    line-height: 1.1;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .winner-dept-sm {
     font-size: var(--winner-dept-size);
     color: rgba(255, 255, 255, 0.85);
-    text-align: right;
+    line-height: 1.1;
+    max-width: 100%;
+    text-align: center;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @keyframes winnerPop {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { DisplaySettings, DrawMode, Prize } from '../../types/lottery'
+import { DisplaySettings, DrawMode, Participant, Prize } from '../../types/lottery'
 import { useLotteryStore } from '../../stores/lottery-store'
 
 interface FlashNameSequenceProps {
@@ -18,7 +18,7 @@ export function FlashNameSequence({
     nameDurationMs
 }: FlashNameSequenceProps) {
     const { participants } = useLotteryStore()
-    const [displayName, setDisplayName] = useState('')
+    const [displayParticipant, setDisplayParticipant] = useState<Participant | null>(null)
     const [flashKey, setFlashKey] = useState(0)
 
     const eligibleParticipants = useMemo(() => {
@@ -30,13 +30,13 @@ export function FlashNameSequence({
 
     useEffect(() => {
         if (eligibleParticipants.length === 0 || nameDurationMs <= 0) {
-            setDisplayName('')
+            setDisplayParticipant(null)
             return
         }
 
         const pickName = () => {
             const index = Math.floor(Math.random() * eligibleParticipants.length)
-            setDisplayName(eligibleParticipants[index]?.name ?? '')
+            setDisplayParticipant(eligibleParticipants[index] ?? null)
             setFlashKey((prev) => prev + 1)
         }
 
@@ -64,8 +64,9 @@ export function FlashNameSequence({
                 />
             )}
             <div className="flash-name-card">
-                <div key={flashKey} className="flash-name">
-                    {displayName || '...'}
+                <div key={flashKey} className="flash-name-stack">
+                    <div className="flash-name">{displayParticipant?.name || '...'}</div>
+                    <div className="flash-dept">{displayParticipant?.department ?? ''}</div>
                 </div>
             </div>
             {showPrizeBlock && (
