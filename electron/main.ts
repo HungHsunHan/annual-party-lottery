@@ -9,6 +9,11 @@ const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 
 let cachedBackupDir: string | null = null
 
+const toggleDisplayFullscreen = () => {
+    if (!displayWindow || displayWindow.isDestroyed()) return
+    displayWindow.setFullScreen(!displayWindow.isFullScreen())
+}
+
 const ensureWritableDir = (dir: string): boolean => {
     try {
         fs.mkdirSync(dir, { recursive: true })
@@ -76,8 +81,9 @@ function createDisplayWindow() {
         minHeight: 600,
         title: '抽獎系統 - 投影畫面',
         frame: true,
-        fullscreen: false,
+        fullscreen: true,
         resizable: true,
+        autoHideMenuBar: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
@@ -86,6 +92,19 @@ function createDisplayWindow() {
     }
 
     displayWindow = new BrowserWindow(windowConfig)
+    displayWindow.setMenuBarVisibility(false)
+    displayWindow.webContents.on('before-input-event', (event, input) => {
+        if (input.type !== 'keyDown') return
+        if (input.key === 'F11') {
+            event.preventDefault()
+            toggleDisplayFullscreen()
+            return
+        }
+        if (input.key === 'Escape' && displayWindow?.isFullScreen()) {
+            event.preventDefault()
+            displayWindow.setFullScreen(false)
+        }
+    })
 
     if (VITE_DEV_SERVER_URL) {
         displayWindow.loadURL(VITE_DEV_SERVER_URL + '#/display')
@@ -255,9 +274,7 @@ function setupIpcHandlers() {
 
     // 開關投影視窗全螢幕
     ipcMain.on('toggle-fullscreen', () => {
-        if (displayWindow) {
-            displayWindow.setFullScreen(!displayWindow.isFullScreen())
-        }
+        toggleDisplayFullscreen()
     })
 
     // 選擇圖片檔案
