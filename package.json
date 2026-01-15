@@ -42,12 +42,6 @@
             "dist/**/*",
             "dist-electron/**/*"
         ],
-        "extraResources": [
-            {
-                "from": "backup",
-                "to": "backup"
-            }
-        ],
         "mac": {
             "target": "dmg"
         },

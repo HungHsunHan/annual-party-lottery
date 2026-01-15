@@ -25,26 +25,6 @@ const ensureWritableDir = (dir: string): boolean => {
     }
 }
 
-const seedBackupDir = (targetDir: string) => {
-    if (!app.isPackaged) return
-    const seedDir = path.join(process.resourcesPath, 'backup')
-    if (!fs.existsSync(seedDir)) return
-
-    if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true })
-    }
-
-    const entries = fs.readdirSync(seedDir, { withFileTypes: true })
-    for (const entry of entries) {
-        if (entry.isDirectory()) continue
-        const sourcePath = path.join(seedDir, entry.name)
-        const targetPath = path.join(targetDir, entry.name)
-        if (!fs.existsSync(targetPath)) {
-            fs.copyFileSync(sourcePath, targetPath)
-        }
-    }
-}
-
 function createControlWindow() {
     controlWindow = new BrowserWindow({
         width: 1400,
@@ -131,20 +111,17 @@ function getBackupDir(): string {
             candidates.push(path.join(process.env.PORTABLE_EXECUTABLE_DIR, 'backup'))
         }
         candidates.push(path.join(path.dirname(process.execPath), 'backup'))
-        candidates.push(path.join(app.getPath('userData'), 'backup'))
     }
 
     for (const dir of candidates) {
         if (ensureWritableDir(dir)) {
-            seedBackupDir(dir)
             cachedBackupDir = dir
             return dir
         }
     }
 
-    const fallbackDir = path.join(app.getPath('userData'), 'backup')
+    const fallbackDir = path.join(process.cwd(), 'backup')
     fs.mkdirSync(fallbackDir, { recursive: true })
-    seedBackupDir(fallbackDir)
     cachedBackupDir = fallbackDir
     return fallbackDir
 }
