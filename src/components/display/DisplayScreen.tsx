@@ -141,9 +141,9 @@ export function DisplayScreen() {
         ? `data:image/png;base64,${customAssets.background}`
         : DEFAULT_BACKGROUND_URL
     const backgroundStyle = {
-        backgroundImage: `url(${backgroundUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
+        backgroundImage: `url(${backgroundUrl})`, // Display background image
+        backgroundSize: 'cover', // Fill the screen; adjust for crop vs. fit
+        backgroundPosition: 'center' // Center focal point
     }
 
     return (

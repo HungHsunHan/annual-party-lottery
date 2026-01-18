@@ -51,7 +51,10 @@ export function StandbyScreen({
             )}
 
             {prizes.length === 0 && (
-                <p style={{ color: 'rgba(255, 255, 255, 0.5)', marginTop: '2rem' }}>
+                <p style={{
+                    color: 'rgba(255, 255, 255, 0.5)', // Hint text color
+                    marginTop: '2rem' // Spacing above the hint
+                }}>
                     等待後台設定獎項...
                 </p>
             )}

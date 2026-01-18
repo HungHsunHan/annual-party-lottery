@@ -70,9 +70,9 @@ export function DrawAnimation({ prize, drawMode }: DrawAnimationProps) {
             </div>
 
             <div style={{
-                marginTop: '2rem',
-                color: 'rgba(255, 255, 255, 0.6)',
-                fontSize: '1.5rem'
+                marginTop: '2rem', // Spacing above the hint
+                color: 'rgba(255, 255, 255, 0.6)', // Hint text color
+                fontSize: '1.5rem' // Hint text size
             }}>
                 🎲 抽獎中...
             </div>

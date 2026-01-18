@@ -9,7 +9,7 @@ interface WinnerRevealProps {
     settings: DisplaySettings['winner']
 }
 
-// 紙花顏色
+// Confetti palette (adjust to change theme colors)
 const CONFETTI_COLORS = [
     '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff',
     '#5f27cd', '#00d2d3', '#ff6b81', '#ffeaa7', '#74b9ff'
@@ -71,10 +71,10 @@ export function WinnerReveal({
                             key={piece.id}
                             className="confetti-piece"
                             style={{
-                                left: piece.left,
-                                backgroundColor: piece.color,
-                                animationDelay: piece.delay,
-                                animationDuration: piece.duration
+                                left: piece.left, // Horizontal spread
+                                backgroundColor: piece.color, // Confetti color
+                                animationDelay: piece.delay, // Stagger timing
+                                animationDuration: piece.duration // Fall speed
                             }}
                         />
                     ))}

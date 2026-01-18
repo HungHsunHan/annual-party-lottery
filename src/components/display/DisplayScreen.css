@@ -1,7 +1,7 @@
 .display-screen {
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%); /* Main backdrop gradient colors */
     position: relative;
     overflow: hidden;
 }
@@ -60,8 +60,8 @@
 }
 
 .footer-info {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.7); /* Footer text color */
+    font-size: 1.25rem; /* Footer text size */
     text-align: center;
     display: flex;
     align-items: center;
@@ -71,7 +71,7 @@
 }
 
 .footer-prize-name {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* Footer prize name size */
     font-weight: 600;
 }
 
@@ -79,18 +79,18 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
+    padding: 0.25rem 0.75rem; /* Pill padding (height/width) */
+    border-radius: 999px; /* Fully rounded pill */
     border: 1px solid rgba(255, 255, 255, 0.35);
     background: rgba(15, 15, 26, 0.4);
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.9); /* Pill text color */
     font-weight: 700;
-    font-size: 0.55em;
+    font-size: 0.55em; /* Pill text size (relative to parent) */
     letter-spacing: 0.04em;
 }
 
 .footer-prize-progress {
-    font-size: 0.85rem;
+    font-size: 0.85rem; /* Footer progress size */
 }
 
 /* 待機畫面 */
@@ -100,15 +100,15 @@
 }
 
 .standby-logo {
-    max-width: 400px;
-    max-height: 200px;
+    max-width: 400px; /* Standby logo max width */
+    max-height: 200px; /* Standby logo max height */
     margin-bottom: 2rem;
     filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.5));
 }
 
 .display-logo {
-    max-width: 280px;
-    max-height: 140px;
+    max-width: 280px; /* Countdown/Winner logo max width */
+    max-height: 140px; /* Countdown/Winner logo max height */
     margin-bottom: 1rem;
     filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.45));
 }
@@ -122,18 +122,18 @@
 }
 
 .standby-title {
-    font-size: 4rem;
+    font-size: 4rem; /* Standby main title size */
     font-weight: 800;
-    background: linear-gradient(135deg, #fff, #c7d2fe);
+    background: linear-gradient(135deg, #fff, #c7d2fe); /* Title gradient colors */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 1rem;
-    text-shadow: 0 0 60px rgba(99, 102, 241, 0.5);
+    text-shadow: 0 0 60px rgba(99, 102, 241, 0.5); /* Title glow strength */
 }
 
 .standby-subtitle {
-    font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.5rem; /* Standby subtitle size */
+    color: rgba(255, 255, 255, 0.7); /* Subtitle color */
     margin-bottom: 3rem;
 }
 
@@ -149,8 +149,8 @@
 .prize-preview-item {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    padding: 1rem 2rem;
-    border-radius: 1rem;
+    padding: 1rem 2rem; /* Prize preview card padding */
+    border-radius: 1rem; /* Prize preview card corner radius */
     border: 1px solid rgba(255, 255, 255, 0.2);
     animation: float 3s ease-in-out infinite;
     display: inline-flex;
@@ -158,7 +158,7 @@
     gap: 0.75rem;
     flex-wrap: wrap;
     justify-content: center;
-    font-size: clamp(1.9rem, 2.8vw, 2.8rem);
+    font-size: clamp(1.9rem, 2.8vw, 2.8rem); /* Prize preview font size range */
 }
 
 .prize-preview-item:nth-child(2n) {
@@ -186,7 +186,7 @@
 }
 
 .prize-preview-name {
-    font-size: 1em;
+    font-size: 1em; /* Prize preview name size */
     font-weight: 800;
     color: white;
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
@@ -198,8 +198,8 @@
 }
 
 .draw-prize-name {
-    font-size: clamp(2.8rem, 4vw, 4.2rem);
-    color: #fbbf24;
+    font-size: clamp(2.8rem, 4vw, 4.2rem); /* Draw prize title size */
+    color: #fbbf24; /* Draw prize title color */
     margin-bottom: 2rem;
     text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
     font-weight: 800;
@@ -212,9 +212,9 @@
 
 .draw-slot-machine {
     background: linear-gradient(180deg, #1e1e3f, #2d2d5f, #1e1e3f);
-    border-radius: 2rem;
-    padding: 3rem 6rem;
-    border: 4px solid #6366f1;
+    border-radius: 2rem; /* Slot machine corner radius */
+    padding: 3rem 6rem; /* Slot machine box size */
+    border: 4px solid #6366f1; /* Slot machine border thickness/color */
     box-shadow:
         0 0 60px rgba(99, 102, 241, 0.3),
         inset 0 0 60px rgba(99, 102, 241, 0.1);
@@ -244,10 +244,10 @@
 }
 
 .slot-names {
-    font-size: 5rem;
+    font-size: 5rem; /* Rolling name size */
     font-weight: 800;
     color: white;
-    height: 120px;
+    height: 120px; /* Slot window height */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -296,7 +296,7 @@
 /* 倒數揭曉 */
 .reveal-countdown {
     position: relative;
-    width: min(900px, 90vw);
+    width: min(900px, 90vw); /* Countdown block width */
     text-align: center;
     color: white;
     display: flex;
@@ -336,8 +336,8 @@
 
 .countdown-core {
     position: relative;
-    width: clamp(180px, 28vw, 260px);
-    height: clamp(180px, 28vw, 260px);
+    width: clamp(180px, 28vw, 260px); /* Countdown circle size */
+    height: clamp(180px, 28vw, 260px); /* Countdown circle size */
     border-radius: 50%;
     display: grid;
     place-items: center;
@@ -396,8 +396,8 @@
 
 .countdown-heart {
     position: absolute;
-    font-size: clamp(4rem, 10vw, 6.5rem);
-    color: #ff4d6d;
+    font-size: clamp(4rem, 10vw, 6.5rem); /* Heart size */
+    color: #ff4d6d; /* Heart color */
     animation: heartBeat 0.9s ease-in-out infinite;
     filter: drop-shadow(0 0 20px rgba(255, 77, 109, 0.6));
     opacity: 0.85;
@@ -405,7 +405,7 @@
 
 .countdown-number {
     position: relative;
-    font-size: clamp(4rem, 10vw, 6.5rem);
+    font-size: clamp(4rem, 10vw, 6.5rem); /* Countdown number size */
     font-weight: 800;
     text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
 }
@@ -429,10 +429,10 @@
 }
 
 .countdown-label {
-    font-size: 1rem;
-    letter-spacing: 0.3rem;
+    font-size: 1rem; /* Label size */
+    letter-spacing: 0.3rem; /* Label spacing */
     text-transform: uppercase;
-    color: rgba(147, 197, 253, 0.9);
+    color: rgba(147, 197, 253, 0.9); /* Label color */
 }
 
 .countdown-prize {
@@ -441,7 +441,7 @@
     gap: 0.75rem;
     flex-wrap: wrap;
     justify-content: center;
-    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    font-size: clamp(2.2rem, 4vw, 3.5rem); /* Prize name size */
 }
 
 .countdown-prize-icon {
@@ -449,15 +449,15 @@
 }
 
 .countdown-prize-name {
-    font-size: 1em;
+    font-size: 1em; /* Prize name size */
     font-weight: 800;
-    color: #fbbf24;
+    color: #fbbf24; /* Prize name color */
     text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
 }
 
 .countdown-subtitle {
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.25rem; /* Countdown subtitle size */
+    color: rgba(255, 255, 255, 0.7); /* Countdown subtitle color */
 }
 
 /* 閃名揭曉 */
@@ -480,13 +480,13 @@
 
 .flash-name-card {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(15, 23, 42, 0.8));
-    border-radius: 1.5rem;
-    padding: 2rem 3.5rem;
+    border-radius: 1.5rem; /* Flash card corner radius */
+    padding: 2rem 3.5rem; /* Flash card padding */
     border: 2px solid rgba(99, 102, 241, 0.5);
     box-shadow:
         0 0 50px rgba(99, 102, 241, 0.35),
         inset 0 0 30px rgba(255, 255, 255, 0.08);
-    min-width: min(80vw, 720px);
+    min-width: min(80vw, 720px); /* Flash card minimum width */
     display: flex;
     justify-content: center;
 }
@@ -501,7 +501,7 @@
 }
 
 .flash-name {
-    font-size: clamp(3rem, 6vw, 5rem);
+    font-size: clamp(3rem, 6vw, 5rem); /* Flash name size */
     font-weight: 800;
     letter-spacing: 0.02em;
     line-height: 1.1;
@@ -515,10 +515,10 @@
 }
 
 .flash-dept {
-    font-size: clamp(1.5rem, 2.6vw, 2.6rem);
+    font-size: clamp(1.5rem, 2.6vw, 2.6rem); /* Department size */
     font-weight: 600;
     line-height: 1.15;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.85); /* Department color */
     max-width: 100%;
     min-height: 1.15em;
     white-space: nowrap;
@@ -551,8 +551,8 @@
 }
 
 .confirm-prize {
-    font-size: clamp(2.4rem, 3.6vw, 3.5rem);
-    color: #fbbf24;
+    font-size: clamp(2.4rem, 3.6vw, 3.5rem); /* Confirm prize size */
+    color: #fbbf24; /* Confirm prize color */
     margin-bottom: 1rem;
     font-weight: 800;
     display: inline-flex;
@@ -565,15 +565,15 @@
 .confirm-winner-container {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.3));
     backdrop-filter: blur(20px);
-    border-radius: 2rem;
-    padding: 3rem 5rem;
+    border-radius: 2rem; /* Confirm container radius */
+    padding: 3rem 5rem; /* Confirm container padding */
     border: 2px solid rgba(255, 255, 255, 0.2);
     margin: 2rem 0;
 }
 
 .confirm-winner-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Card min width */
     gap: 1.5rem;
     margin: 2rem 0;
 }
@@ -581,21 +581,21 @@
 .confirm-winner-item {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.2));
     backdrop-filter: blur(16px);
-    border-radius: 1.5rem;
-    padding: 2rem 2.5rem;
+    border-radius: 1.5rem; /* Card radius */
+    padding: 2rem 2.5rem; /* Card padding */
     border: 2px solid rgba(255, 255, 255, 0.15);
 }
 
 .confirm-winner-item .confirm-winner-name {
-    font-size: 2.5rem;
+    font-size: 2.5rem; /* Winner name size (grid) */
 }
 
 .confirm-winner-item .confirm-winner-dept {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* Winner dept size (grid) */
 }
 
 .confirm-winner-name {
-    font-size: 5rem;
+    font-size: 5rem; /* Winner name size (single) */
     font-weight: 800;
     color: white;
     margin-bottom: 0.5rem;
@@ -603,13 +603,13 @@
 }
 
 .confirm-winner-dept {
-    font-size: 2rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 2rem; /* Winner dept size (single) */
+    color: rgba(255, 255, 255, 0.8); /* Winner dept color */
 }
 
 .confirm-hint {
-    font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.5rem; /* Hint size */
+    color: rgba(255, 255, 255, 0.6); /* Hint color */
     margin-top: 2rem;
     animation: pulse 2s ease-in-out infinite;
 }
@@ -629,8 +629,8 @@
 
 .confetti-piece {
     position: absolute;
-    width: 10px;
-    height: 20px;
+    width: 10px; /* Confetti width */
+    height: 20px; /* Confetti height */
     top: -20px;
     animation: confettiFall 3s linear infinite;
 }
@@ -651,9 +651,9 @@
     display: inline-block;
     background: linear-gradient(135deg, #fbbf24, #f59e0b);
     color: #1e1e2e;
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* Badge text size */
     font-weight: 800;
-    padding: 0.75rem 2rem;
+    padding: 0.75rem 2rem; /* Badge padding */
     border-radius: 9999px;
     margin-bottom: 0;
     animation: bounce 0.5s ease;
@@ -672,8 +672,8 @@
 }
 
 .winner-prize-name {
-    font-size: clamp(2.8rem, 4vw, 4.2rem);
-    color: #fbbf24;
+    font-size: clamp(2.8rem, 4vw, 4.2rem); /* Winner prize name size */
+    color: #fbbf24; /* Winner prize name color */
     margin-bottom: 0;
     font-weight: 800;
     display: inline-flex;
@@ -692,12 +692,12 @@
 }
 
 .winner-list-frame {
-    width: min(88vw, 1688px);
+    width: min(88vw, 1688px); /* Winner list frame width */
     max-width: 100%;
-    max-height: min(88vh, 953px);
+    max-height: min(88vh, 953px); /* Winner list frame height */
     margin: 0 auto;
-    padding: clamp(0.5rem, 1.4vw, 1.5rem);
-    border-radius: clamp(24px, 3vw, 40px);
+    padding: clamp(0.5rem, 1.4vw, 1.5rem); /* Frame padding */
+    border-radius: clamp(24px, 3vw, 40px); /* Frame corner radius */
     overflow: hidden;
     box-sizing: border-box;
     display: flex;
@@ -708,9 +708,9 @@
 .winner-card {
     background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(99, 102, 241, 0.3));
     backdrop-filter: blur(20px);
-    border-radius: 2rem;
-    padding: 4rem 6rem;
-    border: 3px solid rgba(34, 197, 94, 0.5);
+    border-radius: 2rem; /* Single winner card radius */
+    padding: 4rem 6rem; /* Single winner card padding */
+    border: 3px solid rgba(34, 197, 94, 0.5); /* Single winner card border */
     box-shadow:
         0 0 100px rgba(34, 197, 94, 0.3),
         0 0 200px rgba(99, 102, 241, 0.2);
@@ -726,43 +726,43 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    --winner-card-min: 220px;
-    --winner-card-max: 320px;
-    --winner-name-size: 2.2rem;
-    --winner-dept-size: 1.15rem;
-    --winner-card-padding-x: 2.25rem;
-    --winner-card-padding-y: 1.5rem;
-    --winner-card-width: clamp(var(--winner-card-min), 18vw, var(--winner-card-max));
+    --winner-card-min: 220px; /* Small winner card min width */
+    --winner-card-max: 320px; /* Small winner card max width */
+    --winner-name-size: 2.2rem; /* Small winner name size */
+    --winner-dept-size: 1.15rem; /* Small winner dept size */
+    --winner-card-padding-x: 2.25rem; /* Small card horizontal padding */
+    --winner-card-padding-y: 1.5rem; /* Small card vertical padding */
+    --winner-card-width: clamp(var(--winner-card-min), 18vw, var(--winner-card-max)); /* Small card width */
 }
 
 .winner-grid.compact {
-    --winner-card-min: 200px;
-    --winner-card-max: 280px;
-    --winner-name-size: 1.8rem;
-    --winner-dept-size: 1rem;
-    --winner-card-padding-x: 1.8rem;
-    --winner-card-padding-y: 1.2rem;
-    --winner-card-width: clamp(var(--winner-card-min), 16vw, var(--winner-card-max));
+    --winner-card-min: 200px; /* Compact card min width */
+    --winner-card-max: 280px; /* Compact card max width */
+    --winner-name-size: 1.8rem; /* Compact name size */
+    --winner-dept-size: 1rem; /* Compact dept size */
+    --winner-card-padding-x: 1.8rem; /* Compact padding x */
+    --winner-card-padding-y: 1.2rem; /* Compact padding y */
+    --winner-card-width: clamp(var(--winner-card-min), 16vw, var(--winner-card-max)); /* Compact card width */
 }
 
 .winner-grid.dense {
-    --winner-card-min: 170px;
-    --winner-card-max: 230px;
-    --winner-name-size: 1.5rem;
-    --winner-dept-size: 0.95rem;
-    --winner-card-padding-x: 1.4rem;
-    --winner-card-padding-y: 1rem;
-    --winner-card-width: clamp(var(--winner-card-min), 14vw, var(--winner-card-max));
+    --winner-card-min: 170px; /* Dense card min width */
+    --winner-card-max: 230px; /* Dense card max width */
+    --winner-name-size: 1.5rem; /* Dense name size */
+    --winner-dept-size: 0.95rem; /* Dense dept size */
+    --winner-card-padding-x: 1.4rem; /* Dense padding x */
+    --winner-card-padding-y: 1rem; /* Dense padding y */
+    --winner-card-width: clamp(var(--winner-card-min), 14vw, var(--winner-card-max)); /* Dense card width */
 }
 
 .winner-card-sm {
     background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(99, 102, 241, 0.25));
     backdrop-filter: blur(16px);
-    border-radius: 1.5rem;
-    padding: var(--winner-card-padding-y) var(--winner-card-padding-x);
+    border-radius: 1.5rem; /* Small winner card radius */
+    padding: var(--winner-card-padding-y) var(--winner-card-padding-x); /* Small card padding */
     border: 2px solid rgba(34, 197, 94, 0.35);
     box-shadow: 0 0 40px rgba(34, 197, 94, 0.2);
-    width: min(100%, var(--winner-card-width));
+    width: min(100%, var(--winner-card-width)); /* Small card width */
     flex: 0 1 var(--winner-card-width);
     display: flex;
     flex-direction: column;
@@ -773,7 +773,7 @@
 }
 
 .winner-name-sm {
-    font-size: var(--winner-name-size);
+    font-size: var(--winner-name-size); /* Small winner name size */
     font-weight: 800;
     color: white;
     margin-bottom: 0;
@@ -788,8 +788,8 @@
 }
 
 .winner-dept-sm {
-    font-size: var(--winner-dept-size);
-    color: rgba(255, 255, 255, 0.85);
+    font-size: var(--winner-dept-size); /* Small winner dept size */
+    color: rgba(255, 255, 255, 0.85); /* Small winner dept color */
     line-height: 1.1;
     max-width: 100%;
     text-align: center;
@@ -811,7 +811,7 @@
 }
 
 .winner-name {
-    font-size: 6rem;
+    font-size: 6rem; /* Winner name size (single) */
     font-weight: 800;
     color: white;
     margin-bottom: 0.5rem;
@@ -821,12 +821,12 @@
 }
 
 .winner-dept {
-    font-size: 2.5rem;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 2.5rem; /* Winner dept size (single) */
+    color: rgba(255, 255, 255, 0.9); /* Winner dept color */
 }
 
 .winner-emoji {
-    font-size: 4rem;
+    font-size: 4rem; /* Trophy emoji size */
     margin-top: 2rem;
     animation: tada 1s ease infinite;
 }
