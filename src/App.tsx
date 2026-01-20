@@ -4,6 +4,7 @@ import { DisplayScreen } from './components/display/DisplayScreen'
 import { useLotteryStore } from './stores/lottery-store'
 import { checkForUnfinishedSession, loadAutoBackup } from './utils/backup-manager'
 import { loadDisplaySettings } from './utils/display-settings-storage'
+import { hydratePrizeIcons } from './utils/prize-icons'
 
 function App() {
     // 使用 hash router 來區分控制台和投影畫面
@@ -59,7 +60,8 @@ function App() {
             if (result === 0) {
                 const backup = await loadAutoBackup()
                 if (backup) {
-                    useLotteryStore.getState().setPrizes(backup.prizes)
+                    const hydratedPrizes = await hydratePrizeIcons(backup.prizes)
+                    useLotteryStore.getState().setPrizes(hydratedPrizes)
                     useLotteryStore.getState().setParticipants(backup.participants)
                     useLotteryStore.setState({ winners: backup.winners })
                 } else {

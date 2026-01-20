@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     // 備份操作
     getAppDataPath: () => ipcRenderer.invoke('get-app-data-path'),
+    getAppBaseDir: () => ipcRenderer.invoke('get-app-base-dir'),
     saveBackup: (filename: string, data: string) => ipcRenderer.invoke('save-backup', { filename, data }),
     loadBackup: (filename: string) => ipcRenderer.invoke('load-backup', filename),
     checkBackupExists: (filename: string) => ipcRenderer.invoke('check-backup-exists', filename),

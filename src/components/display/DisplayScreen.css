@@ -185,6 +185,16 @@
     font-size: 0.8em;
 }
 
+.prize-preview-icon-img {
+    width: clamp(64px, 12vw, 96px);
+    height: clamp(64px, 12vw, 96px);
+    object-fit: contain;
+    border-radius: 0.75rem;
+    padding: 0.35rem;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
 .prize-preview-name {
     font-size: 1em; /* Prize preview name size */
     font-weight: 800;

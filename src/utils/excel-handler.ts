@@ -93,6 +93,7 @@ export function importPrizes(base64Data: string): Prize[] {
         if (!name) return null
 
         const id = toString(row['獎項ID'] || row['prizeId'] || row['id'])
+        const iconPath = toString(row['圖示'] || row['iconPath'] || row['icon'])
         const quantity = toNumber(row['總數量'] ?? row['數量'] ?? row['quantity'], 1) || 1
         const drawnCount = toNumber(row['已抽中數量'] ?? row['drawnCount'], 0)
         const order = toNumber(row['排序順位'] ?? row['order'], index)
@@ -107,7 +108,8 @@ export function importPrizes(base64Data: string): Prize[] {
             drawnCount,
             order,
             excludeWinners,
-            status
+            status,
+            iconPath: iconPath || undefined
         }
     }).filter((p: Prize | null): p is Prize => Boolean(p))
 
@@ -144,6 +146,7 @@ export function exportPrizes(prizes: Prize[]): string {
     const data = prizes.map(p => ({
         '獎項ID': p.id,
         '獎項名稱': p.name,
+        '圖示': p.iconPath || '',
         '總數量': p.quantity,
         '已抽中數量': p.drawnCount,
         '剩餘數量': p.quantity - p.drawnCount,
@@ -159,6 +162,7 @@ export function exportPrizes(prizes: Prize[]): string {
     worksheet['!cols'] = [
         { wch: 14 },  // 獎項ID
         { wch: 20 },  // 獎項名稱
+        { wch: 30 },  // 圖示
         { wch: 10 },  // 總數量
         { wch: 12 },  // 已抽中數量
         { wch: 10 },  // 剩餘數量
@@ -327,6 +331,7 @@ export function createBackupData(
     const prizesData = prizes.map(p => ({
         '獎項ID': p.id,
         '獎項名稱': p.name,
+        '圖示': p.iconPath || '',
         '總數量': p.quantity,
         '已抽中數量': p.drawnCount,
         '剩餘數量': p.quantity - p.drawnCount,
@@ -397,6 +402,7 @@ export function restoreFromBackup(base64Data: string): {
         const prizes: Prize[] = prizesRaw.map((row: any) => ({
             id: row['獎項ID'],
             name: row['獎項名稱'],
+            iconPath: row['圖示'] || undefined,
             quantity: row['總數量'],
             drawnCount: row['已抽中數量'],
             order: row['排序順位'],

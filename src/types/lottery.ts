@@ -16,6 +16,8 @@ export interface Prize {
     order: number
     excludeWinners: boolean  // 個別設定是否排除已中獎者
     status: 'pending' | 'in-progress' | 'incomplete' | 'completed'
+    iconPath?: string
+    iconData?: string
 }
 
 // 中獎者類型

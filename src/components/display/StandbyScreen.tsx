@@ -39,7 +39,15 @@ export function StandbyScreen({
             {showPreview && currentPrize && (
                 <div className="prize-preview">
                     <div className="prize-preview-item">
-                        <span className="prize-preview-icon">🎁</span>
+                        {currentPrize.iconData ? (
+                            <img
+                                src={currentPrize.iconData}
+                                alt={currentPrize.name}
+                                className="prize-preview-icon-img"
+                            />
+                        ) : (
+                            <span className="prize-preview-icon">🎁</span>
+                        )}
                         <span className="prize-preview-name">{currentPrize.name}</span>
                         {showProgress && (
                             <span className="prize-progress">

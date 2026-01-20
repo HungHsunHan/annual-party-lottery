@@ -126,6 +126,16 @@ function getBackupDir(): string {
     return fallbackDir
 }
 
+function getAppBaseDir(): string {
+    if (!app.isPackaged) {
+        return process.cwd()
+    }
+    if (process.env.PORTABLE_EXECUTABLE_DIR) {
+        return process.env.PORTABLE_EXECUTABLE_DIR
+    }
+    return path.dirname(process.execPath)
+}
+
 // IPC 處理器
 function setupIpcHandlers() {
     // 同步狀態到前台
@@ -186,6 +196,11 @@ function setupIpcHandlers() {
     // 獲取備份資料路徑
     ipcMain.handle('get-app-data-path', () => {
         return getBackupDir()
+    })
+
+    // 獲取 app 基準目錄（portable 支援）
+    ipcMain.handle('get-app-base-dir', () => {
+        return getAppBaseDir()
     })
 
     // 備份狀態

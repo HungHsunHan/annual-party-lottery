@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLotteryStore } from '../../stores/lottery-store'
 import { Prize } from '../../types/lottery'
 import { exportPrizes, importPrizes } from '../../utils/excel-handler'
+import { hydratePrizeIcons } from '../../utils/prize-icons'
 import {
     DndContext,
     closestCenter,
@@ -153,7 +154,8 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
 
             const imported = importPrizes(base64Data)
             if (imported.length > 0) {
-                setPrizes(imported)
+                const hydrated = await hydratePrizeIcons(imported)
+                setPrizes(hydrated)
                 onUpdate()
                 await window.electronAPI.showMessage({
                     type: 'info',

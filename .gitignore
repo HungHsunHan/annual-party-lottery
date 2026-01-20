@@ -6,3 +6,4 @@ release/
 *.log
 backup_state.xlsx
 /backup
+/images

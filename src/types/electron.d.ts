@@ -13,6 +13,7 @@ export interface ElectronAPI {
 
     // 備份操作
     getAppDataPath: () => Promise<string>
+    getAppBaseDir: () => Promise<string>
     saveBackup: (filename: string, data: string) => Promise<string | null>
     loadBackup: (filename: string) => Promise<string | null>
     checkBackupExists: (filename: string) => Promise<boolean>
