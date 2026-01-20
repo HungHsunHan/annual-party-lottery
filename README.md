@@ -179,6 +179,28 @@ npm run electron:build
 - **中獎畫面**：恭喜文字、Logo、獎項名稱/進度、部門顯示、彩帶、結尾表情
 - **設定檔**：可儲存與還原，存檔內容會立即同步前台
 
+### 前台顯示樣式對照
+
+樣式：DisplayScreen.css
+
+待機畫面
+.standby-title：主標題
+.standby-subtitle：副標題
+.prize-preview-name：獎項名稱
+
+倒數畫面
+.countdown-number：倒數數字
+.countdown-subtitle：倒數副標
+.countdown-prize-name：獎項名稱
+
+抽獎畫面
+.draw-prize-name：獎項名稱
+
+揭曉畫面
+.winner-prize-name：獎項名稱
+.winner-name：得獎者姓名
+.winner-dept：得獎者部門
+
 ### 快捷鍵
 
 - 前台投影視窗：`F11` 切換全螢幕、`Esc` 退出全螢幕
