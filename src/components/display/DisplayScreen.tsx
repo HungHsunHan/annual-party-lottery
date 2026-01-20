@@ -49,6 +49,7 @@ export function DisplayScreen() {
             setIsRevealReady(false)
             setRevealSeconds(REVEAL_COUNTDOWN_SECONDS)
             setIsFlashing(false)
+            soundManager.stop('countdown')
             return
         }
 
@@ -60,6 +61,8 @@ export function DisplayScreen() {
 
         const startCountdown = () => {
             setIsFlashing(false)
+            soundManager.stop('countdown')
+            soundManager.play('countdown')
             let secondsRemaining = REVEAL_COUNTDOWN_SECONDS
             setRevealSeconds(secondsRemaining)
             countdownInterval = setInterval(() => {
@@ -68,6 +71,7 @@ export function DisplayScreen() {
             }, 1000)
             countdownTimeout = setTimeout(() => {
                 setIsRevealReady(true)
+                soundManager.stop('countdown')
                 if (countdownInterval) {
                     clearInterval(countdownInterval)
                 }
@@ -83,6 +87,7 @@ export function DisplayScreen() {
         }
 
         return () => {
+            soundManager.stop('countdown')
             if (countdownInterval) {
                 clearInterval(countdownInterval)
             }
