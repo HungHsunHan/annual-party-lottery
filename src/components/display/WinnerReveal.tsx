@@ -48,6 +48,7 @@ export function WinnerReveal({
     }, [settings.showConfetti])
 
     const multiple = participants.length > 1
+    const sizeClass = participants.length <= 6 ? `size-${participants.length}` : ''
     const densityClass = participants.length >= 16
         ? 'dense'
         : participants.length >= 9
@@ -110,7 +111,9 @@ export function WinnerReveal({
 
             <div className="winner-list-frame">
                 {multiple ? (
-                    <div className={`winner-grid${densityClass ? ` ${densityClass}` : ''}`}>
+                    <div
+                        className={`winner-grid${sizeClass ? ` ${sizeClass}` : ''}${densityClass ? ` ${densityClass}` : ''}`}
+                    >
                         {participants.map(participant => (
                             <div key={participant.id} className="winner-card-sm">
                                 <div className="winner-name-sm">{participant.name}</div>

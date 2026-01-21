@@ -706,7 +706,9 @@
 }
 
 .winner-card {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(99, 102, 241, 0.3));
+    background:
+        linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25)),
+        linear-gradient(135deg, rgba(34, 197, 94, 0.35), rgba(99, 102, 241, 0.35));
     backdrop-filter: blur(20px);
     border-radius: 2rem; /* Single winner card radius */
     padding: 4rem 6rem; /* Single winner card padding */
@@ -728,35 +730,78 @@
     box-sizing: border-box;
     --winner-card-min: 220px; /* Small winner card min width */
     --winner-card-max: 320px; /* Small winner card max width */
-    --winner-name-size: 2.2rem; /* Small winner name size */
+    --winner-name-size: clamp(2.6rem, 3vw, 3.2rem); /* Small winner name size */
     --winner-dept-size: 1.15rem; /* Small winner dept size */
     --winner-card-padding-x: 2.25rem; /* Small card horizontal padding */
-    --winner-card-padding-y: 1.5rem; /* Small card vertical padding */
+    --winner-card-padding-y: 0.6rem; /* Small card vertical padding */
     --winner-card-width: clamp(var(--winner-card-min), 18vw, var(--winner-card-max)); /* Small card width */
+}
+
+.winner-grid.size-2 {
+    --winner-card-min: 420px;
+    --winner-card-max: 520px;
+    --winner-name-size: clamp(3.6rem, 4.6vw, 4.6rem);
+    --winner-dept-size: 1.6rem;
+    --winner-card-padding-x: 3.2rem;
+    --winner-card-padding-y: 1.2rem;
+    --winner-card-width: clamp(var(--winner-card-min), 42vw, var(--winner-card-max));
+}
+
+.winner-grid.size-3 {
+    --winner-card-min: 360px;
+    --winner-card-max: 460px;
+    --winner-name-size: clamp(3.2rem, 4vw, 4rem);
+    --winner-dept-size: 1.4rem;
+    --winner-card-padding-x: 2.6rem;
+    --winner-card-padding-y: 0.95rem;
+    --winner-card-width: clamp(var(--winner-card-min), 32vw, var(--winner-card-max));
+}
+
+.winner-grid.size-4 {
+    --winner-card-min: 300px;
+    --winner-card-max: 380px;
+    --winner-name-size: clamp(2.8rem, 3.2vw, 3.4rem);
+    --winner-dept-size: 1.2rem;
+    --winner-card-padding-x: 2.2rem;
+    --winner-card-padding-y: 0.8rem;
+    --winner-card-width: clamp(var(--winner-card-min), 26vw, var(--winner-card-max));
+}
+
+.winner-grid.size-5,
+.winner-grid.size-6 {
+    --winner-card-min: 260px;
+    --winner-card-max: 330px;
+    --winner-name-size: clamp(2.6rem, 3vw, 3.1rem);
+    --winner-dept-size: 1.1rem;
+    --winner-card-padding-x: 2rem;
+    --winner-card-padding-y: 0.7rem;
+    --winner-card-width: clamp(var(--winner-card-min), 22vw, var(--winner-card-max));
 }
 
 .winner-grid.compact {
     --winner-card-min: 200px; /* Compact card min width */
     --winner-card-max: 280px; /* Compact card max width */
-    --winner-name-size: 1.8rem; /* Compact name size */
+    --winner-name-size: clamp(2.2rem, 2.6vw, 2.8rem); /* Compact name size */
     --winner-dept-size: 1rem; /* Compact dept size */
     --winner-card-padding-x: 1.8rem; /* Compact padding x */
-    --winner-card-padding-y: 1.2rem; /* Compact padding y */
+    --winner-card-padding-y: 0.55rem; /* Compact padding y */
     --winner-card-width: clamp(var(--winner-card-min), 16vw, var(--winner-card-max)); /* Compact card width */
 }
 
 .winner-grid.dense {
     --winner-card-min: 170px; /* Dense card min width */
     --winner-card-max: 230px; /* Dense card max width */
-    --winner-name-size: 1.5rem; /* Dense name size */
+    --winner-name-size: clamp(1.9rem, 2.2vw, 2.4rem); /* Dense name size */
     --winner-dept-size: 0.95rem; /* Dense dept size */
     --winner-card-padding-x: 1.4rem; /* Dense padding x */
-    --winner-card-padding-y: 1rem; /* Dense padding y */
+    --winner-card-padding-y: 0.5rem; /* Dense padding y */
     --winner-card-width: clamp(var(--winner-card-min), 14vw, var(--winner-card-max)); /* Dense card width */
 }
 
 .winner-card-sm {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(99, 102, 241, 0.25));
+    background:
+        linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.35)),
+        linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(99, 102, 241, 0.3));
     backdrop-filter: blur(16px);
     border-radius: 1.5rem; /* Small winner card radius */
     padding: var(--winner-card-padding-y) var(--winner-card-padding-x); /* Small card padding */
@@ -768,7 +813,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.3rem;
     text-align: center;
 }
 
@@ -781,6 +826,7 @@
         0 0 20px rgba(255, 255, 255, 0.5),
         0 0 40px rgba(34, 197, 94, 0.4);
     line-height: 1.1;
+    width: 100%;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -791,6 +837,7 @@
     font-size: var(--winner-dept-size); /* Small winner dept size */
     color: rgba(255, 255, 255, 0.85); /* Small winner dept color */
     line-height: 1.1;
+    width: 100%;
     max-width: 100%;
     text-align: center;
     white-space: nowrap;
