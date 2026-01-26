@@ -8,8 +8,11 @@ interface DrawControlProps {
     onConfirm: () => void
 }
 
+type Decision = 'confirm' | 'redraw'
+
 export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
     const [isRevealCountdownDone, setIsRevealCountdownDone] = useState(false)
+    const [decisionMap, setDecisionMap] = useState<Record<string, Decision>>({})
     const {
         prizes,
         participants,
@@ -20,7 +23,6 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         currentDraw,
         setPendingParticipants,
         confirmWinners,
-        rejectAndRedraw,
         finishCurrentPrizeDraw,
         setSystemState,
         displaySettings
@@ -34,6 +36,7 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
     const displayPrize = currentPrize || nextPrize
     const pendingParticipants = currentDraw?.pendingParticipants ?? []
     const revealSignature = currentDraw?.revealParticipants.map(participant => participant.id).join(',') ?? ''
+    const pendingSignature = pendingParticipants.map(participant => participant.id).join(',') ?? ''
     const isRevealPhase = systemState === 'revealing' || systemState === 'confirming'
     const flashDurationMs = Math.max(0, displaySettings.countdown.flashDurationSeconds ?? 0) * 1000
     const flashNameDurationMs = Math.max(0, displaySettings.countdown.flashNameDurationMs ?? 0)
@@ -53,6 +56,18 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         ? flashDurationMs
         : 0
     const revealDelayMs = REVEAL_COUNTDOWN_MS + flashDelayMs
+    const decisionCounts = pendingParticipants.reduce(
+        (acc, participant) => {
+            const decision = decisionMap[participant.id] ?? 'confirm'
+            if (decision === 'redraw') {
+                acc.redraw += 1
+            } else {
+                acc.confirm += 1
+            }
+            return acc
+        },
+        { confirm: 0, redraw: 0 }
+    )
 
     useEffect(() => {
         if (!isRevealPhase || !revealSignature) {
@@ -70,12 +85,36 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         }
     }, [isRevealPhase, revealSignature, revealDelayMs])
 
-    // 執行隨機抽獎
-    const pickRandomParticipants = (count: number, excludeIds: Set<string> = new Set()) => {
-        const eligible = getEligibleParticipants().filter(p => !excludeIds.has(p.id))
-        if (eligible.length === 0 || count <= 0) return []
+    useEffect(() => {
+        if (!pendingSignature) {
+            setDecisionMap({})
+            return
+        }
 
-        const pool = [...eligible]
+        setDecisionMap((prev) => {
+            const next: Record<string, Decision> = {}
+            pendingParticipants.forEach(participant => {
+                next[participant.id] = prev[participant.id] ?? 'confirm'
+            })
+            return next
+        })
+    }, [pendingSignature, pendingParticipants])
+
+    const pickRandomParticipantsFromState = (count: number, excludeIds: Set<string> = new Set()) => {
+        const state = useLotteryStore.getState()
+        const activePrize = state.currentPrizeId
+            ? state.prizes.find(prize => prize.id === state.currentPrizeId)
+            : null
+
+        if (!activePrize || count <= 0) return []
+
+        const eligible = activePrize.excludeWinners
+            ? state.participants.filter(participant => !participant.hasWon)
+            : state.participants
+        const filtered = eligible.filter(participant => !excludeIds.has(participant.id))
+        if (filtered.length === 0) return []
+
+        const pool = [...filtered]
         for (let i = pool.length - 1; i > 0; i -= 1) {
             const j = Math.floor(Math.random() * (i + 1))
             ;[pool[i], pool[j]] = [pool[j], pool[i]]
@@ -84,12 +123,26 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         return pool.slice(0, Math.min(count, pool.length))
     }
 
-    // 確認中獎
-    const handleConfirm = (participantId?: string) => {
-        confirmWinners(participantId ? [participantId] : undefined)
-        onConfirm()
+    const triggerDraw = (count: number) => {
+        if (count <= 0) return
 
-        // 檢查是否還要繼續抽
+        setSystemState('drawing')
+        onStateChange()
+
+        setTimeout(() => {
+            const winners = pickRandomParticipantsFromState(count)
+            if (winners.length > 0) {
+                setPendingParticipants(winners)
+                onStateChange()
+                return
+            }
+
+            setSystemState('standby')
+            onStateChange()
+        }, 100)
+    }
+
+    const proceedAfterConfirm = () => {
         const updatedState = useLotteryStore.getState()
         const updatedPrize = updatedState.prizes.find(p => p.id === updatedState.currentPrizeId)
         if (!updatedPrize) return
@@ -100,42 +153,60 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         }
 
         if (updatedPrize.drawnCount >= updatedPrize.quantity) {
-            // 獎項抽完了
             finishCurrentPrizeDraw()
-            onStateChange()
-        } else if (drawMode === 'custom' && updatedState.currentDraw && updatedState.currentDraw.confirmedCount < customDrawCount) {
-            // 繼續抽
-            setTimeout(handleStartDraw, 500)
-        } else {
-            // 逐一抽模式，等待下一次手動點擊
-            setSystemState('standby')
-            onStateChange()
-        }
-    }
-
-    // 放棄重抽
-    const handleReject = (participantId?: string) => {
-        if (drawMode === 'all' && participantId) {
-            const remainingPending = pendingParticipants.filter(p => p.id !== participantId)
-            const excludeIds = new Set(remainingPending.map(p => p.id))
-            const [replacement] = pickRandomParticipants(1, excludeIds)
-            const nextPending = replacement ? [...remainingPending, replacement] : remainingPending
-            setPendingParticipants(nextPending)
             onStateChange()
             return
         }
 
-        rejectAndRedraw()
-        onStateChange()
+        if (drawMode === 'custom' &&
+            updatedState.currentDraw &&
+            updatedState.currentDraw.confirmedCount < customDrawCount) {
+            triggerDraw(1)
+            return
+        }
 
-        // 立刻重新抽
-        setTimeout(() => {
-            const [winner] = pickRandomParticipants(1)
-            if (winner) {
-                setPendingParticipants([winner])
-                onStateChange()
+        setSystemState('standby')
+        onStateChange()
+    }
+
+    const setAllDecisions = (decision: Decision) => {
+        const next: Record<string, Decision> = {}
+        pendingParticipants.forEach(participant => {
+            next[participant.id] = decision
+        })
+        setDecisionMap(next)
+    }
+
+    const setDecision = (participantId: string, decision: Decision) => {
+        setDecisionMap((prev) => ({ ...prev, [participantId]: decision }))
+    }
+
+    const handleApplyDecisions = () => {
+        if (pendingParticipants.length === 0) return
+
+        const confirmIds: string[] = []
+        const redrawIds: string[] = []
+
+        pendingParticipants.forEach(participant => {
+            const decision = decisionMap[participant.id] ?? 'confirm'
+            if (decision === 'redraw') {
+                redrawIds.push(participant.id)
+            } else {
+                confirmIds.push(participant.id)
             }
-        }, 100)
+        })
+
+        if (confirmIds.length > 0) {
+            confirmWinners(confirmIds)
+            onConfirm()
+        }
+
+        if (redrawIds.length > 0) {
+            triggerDraw(redrawIds.length)
+            return
+        }
+
+        proceedAfterConfirm()
     }
 
     const handleContinue = () => {
@@ -182,12 +253,32 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
                 <div className="flex items-center gap-4" style={{ flex: 1, justifyContent: 'flex-end' }}>
                     <div className="confirm-list">
                         <div className="confirm-summary">
-                            <span>抽中 {pendingParticipants.length} 人</span>
-                            {pendingParticipants.length > 1 && (
-                                <button className="btn btn-success" onClick={() => handleConfirm()}>
-                                    ✅ 全部確認
+                            <div className="confirm-summary-info">
+                                <span>抽中 {pendingParticipants.length} 人</span>
+                                <span className="confirm-summary-count is-confirm">
+                                    獲獎 {decisionCounts.confirm}
+                                </span>
+                                <span className="confirm-summary-count is-redraw">
+                                    重抽 {decisionCounts.redraw}
+                                </span>
+                            </div>
+                            <div className="confirm-summary-actions">
+                                <button
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => setAllDecisions('confirm')}
+                                >
+                                    ✅ 全部獲獎
                                 </button>
-                            )}
+                                <button
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => setAllDecisions('redraw')}
+                                >
+                                    ❌ 全部重抽
+                                </button>
+                                <button className="btn btn-success" onClick={handleApplyDecisions}>
+                                    ✅ 確定
+                                </button>
+                            </div>
                         </div>
                         {pendingParticipants.map(participant => (
                             <div key={participant.id} className="confirm-list-item">
@@ -195,10 +286,16 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
                                     {participant.department} - {participant.name}
                                 </span>
                                 <div className="confirm-list-actions">
-                                    <button className="btn btn-success btn-sm" onClick={() => handleConfirm(participant.id)}>
-                                        ✅ 確認
+                                    <button
+                                        className={`btn btn-success btn-sm confirm-decision-btn ${decisionMap[participant.id] !== 'redraw' ? 'is-selected' : ''}`}
+                                        onClick={() => setDecision(participant.id, 'confirm')}
+                                    >
+                                        ✅ 獲獎
                                     </button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleReject(participant.id)}>
+                                    <button
+                                        className={`btn btn-danger btn-sm confirm-decision-btn ${decisionMap[participant.id] === 'redraw' ? 'is-selected' : ''}`}
+                                        onClick={() => setDecision(participant.id, 'redraw')}
+                                    >
                                         ❌ 重抽
                                     </button>
                                 </div>

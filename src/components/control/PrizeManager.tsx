@@ -127,6 +127,9 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
     const [newPrizeQty, setNewPrizeQty] = useState(1)
     const [showCompleted, setShowCompleted] = useState(false)
 
+    const normalizeText = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ')
+    const getPrizeKey = (name: string) => normalizeText(name)
+
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -172,6 +175,93 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
             }
         } catch (error) {
             console.error('Import error:', error)
+            await window.electronAPI.showMessage({
+                type: 'error',
+                title: '匯入錯誤',
+                message: `匯入過程發生錯誤：${error instanceof Error ? error.message : '未知錯誤'}\n\n請確認 Excel 格式正確。`
+            })
+        }
+    }
+
+    const handleInsertImport = async () => {
+        try {
+            const filePath = await window.electronAPI.selectFile({
+                filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
+            })
+            if (!filePath) return
+
+            const base64Data = await window.electronAPI.readFile(filePath)
+            if (!base64Data) {
+                await window.electronAPI.showMessage({
+                    type: 'error',
+                    title: '匯入失敗',
+                    message: '無法讀取檔案，請確認檔案是否損壞或格式正確。'
+                })
+                return
+            }
+
+            const imported = importPrizes(base64Data)
+            if (imported.length === 0) {
+                await window.electronAPI.showMessage({
+                    type: 'warning',
+                    title: '匯入結果',
+                    message: '未偵測到有效資料。請確認：\n\n' +
+                        '1. 第一列為標題列（獎項名稱 / prize / name）\n' +
+                        '2. 資料在第一個工作表 (Sheet)\n' +
+                        '3. 獎項名稱欄位不為空白'
+                })
+                return
+            }
+
+            const existingKeys = new Set(prizes.map(prize => getPrizeKey(prize.name)))
+            const existingIds = new Set(prizes.map(prize => prize.id))
+            const duplicateNameSet = new Set<string>()
+            const duplicateNames: string[] = []
+            const newPrizes: Prize[] = []
+
+            const recordDuplicate = (name: string) => {
+                if (duplicateNameSet.has(name)) return
+                duplicateNameSet.add(name)
+                duplicateNames.push(name)
+            }
+
+            for (const prize of imported) {
+                const key = getPrizeKey(prize.name)
+                const isDuplicateName = existingKeys.has(key)
+                const isDuplicateId = existingIds.has(prize.id)
+
+                if (isDuplicateName || isDuplicateId) {
+                    recordDuplicate(prize.name)
+                    continue
+                }
+
+                existingKeys.add(key)
+                existingIds.add(prize.id)
+                newPrizes.push({
+                    ...prize,
+                    order: prizes.length + newPrizes.length
+                })
+            }
+
+            if (newPrizes.length > 0) {
+                setPrizes([...prizes, ...newPrizes])
+                onUpdate()
+            }
+
+            const duplicateMessage = duplicateNames.length > 0
+                ? `\n\n以下獎項已存在，已略過 ${duplicateNames.length} 項：\n${duplicateNames.join('、')}`
+                : ''
+            const summary = newPrizes.length > 0
+                ? `已新增 ${newPrizes.length} 個獎項`
+                : '未新增任何獎項'
+
+            await window.electronAPI.showMessage({
+                type: duplicateNames.length > 0 ? 'warning' : 'info',
+                title: duplicateNames.length > 0 ? '插入結果' : '插入成功',
+                message: summary + duplicateMessage
+            })
+        } catch (error) {
+            console.error('Insert import error:', error)
             await window.electronAPI.showMessage({
                 type: 'error',
                 title: '匯入錯誤',
@@ -280,6 +370,9 @@ export function PrizeManager({ onUpdate }: PrizeManagerProps) {
                         )}
                         <button className="btn btn-secondary" onClick={handleImport}>
                             📥 匯入 Excel
+                        </button>
+                        <button className="btn btn-secondary" onClick={handleInsertImport}>
+                            ➕ 插入額外獎項
                         </button>
                         <button className="btn btn-secondary" onClick={handleExport}>
                             📤 匯出 Excel
