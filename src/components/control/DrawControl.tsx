@@ -24,6 +24,7 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         setPendingParticipants,
         confirmWinners,
         finishCurrentPrizeDraw,
+        setCurrentPrize,
         setSystemState,
         displaySettings
     } = useLotteryStore()
@@ -142,6 +143,23 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         }, 100)
     }
 
+    const advanceToNextPrize = () => {
+        const state = useLotteryStore.getState()
+        const nextPrize = state.prizes
+            .filter(prize => prize.status !== 'completed' && prize.drawnCount < prize.quantity)
+            .sort((a, b) => a.order - b.order)[0]
+
+        if (nextPrize) {
+            setCurrentPrize(nextPrize.id)
+        }
+    }
+
+    const finishPrizeAndAdvance = () => {
+        finishCurrentPrizeDraw()
+        advanceToNextPrize()
+        onStateChange()
+    }
+
     const proceedAfterConfirm = () => {
         const updatedState = useLotteryStore.getState()
         const updatedPrize = updatedState.prizes.find(p => p.id === updatedState.currentPrizeId)
@@ -153,8 +171,7 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         }
 
         if (updatedPrize.drawnCount >= updatedPrize.quantity) {
-            finishCurrentPrizeDraw()
-            onStateChange()
+            finishPrizeAndAdvance()
             return
         }
 
@@ -213,10 +230,10 @@ export function DrawControl({ onStateChange, onConfirm }: DrawControlProps) {
         const updatedState = useLotteryStore.getState()
         const updatedPrize = updatedState.prizes.find(p => p.id === updatedState.currentPrizeId)
         if (updatedPrize && updatedPrize.drawnCount >= updatedPrize.quantity) {
-            finishCurrentPrizeDraw()
-        } else {
-            setSystemState('standby')
+            finishPrizeAndAdvance()
+            return
         }
+        setSystemState('standby')
         onStateChange()
     }
 
